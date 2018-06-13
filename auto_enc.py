@@ -24,7 +24,8 @@ def conv_weights_from_file(size,file):
     model.load_weights(file)
     weights = []
     for layer in model.layers:
-        if isinstance(layer, keras.layers.convolutional.Conv2D):
+        print(layer, len(layer.get_weights()))
+        if isinstance(layer, keras.layers.Convolution2D):
             w = layer.get_weights()
             weights.append(w)
     return weights
@@ -38,20 +39,22 @@ def load_file(file, make_gray=False, resize=None):
         exit()
         raw_data = np.mean(raw_data, axis=3)
         raw_data = raw_data.reshape(raw_data.shape+(1,))
-
-    n = raw_data.shape[0]
-
-    if resize is None:
-        return raw_data.astype(np.float32)/255.0, raw_data.shape[0]
-    else:
-        print("Resize not implemented yet...")
+    if resize is not None:
+        print("Resizing not implemented yet...")
+        exit()
         data = np.empty((n,)+size)
         for i in range(n):
             small = cv2.resize(raw_data[i,:,:,:3], None, fx=fx, fy=fy, interpolation=cv2.INTER_AREA) / 255.0
             if MAKE_GRAYSCALE:
                 small = small[:,:,np.newaxis]
             data[i,:,:,:] = small
-    return data, n
+    else:
+        data = raw_data
+    data = data.astype(np.float32)/255.0
+    n = data.shape[0]
+    avg = np.mean(data,axis=0)[np.newaxis,:]
+    avg_block = np.concatenate((avg,)*n,axis=0)
+    return data, n, avg, avg_block
 
 ############
 ############
@@ -68,7 +71,17 @@ testing = not training
 file_idx = 0
 
 size = (96,96,3)
+
+# size = (28,28,3)
+# from tensorflow.examples.tutorials.mnist import input_data
+# mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+# mnist = mnist.train.images.reshape((-1,28,28))[:1000,:,:,np.newaxis]
+# mnist = np.concatenate((mnist,mnist,mnist), axis=3)
+# avg = np.mean(mnist, axis=0)[np.newaxis,:,:,:]
+# avg_block = np.concatenate((avg,)*1000,axis=0)
+
 model = make_autoencoder(size=size,lr=lr)
+
 
 if training :
     T=-1
@@ -76,12 +89,14 @@ if training :
         for infile in os.listdir(work_dir+project+"/data"):
             T+=1
             with open(work_dir+project+"/data/"+infile,'rb') as file:
-                data, _ = load_file(file)
-            history = model.fit(data,data, batch_size=32)
+                data, _, avg, avg_block = load_file(file)
+            history = model.fit(data-avg_block,data-avg_block, batch_size=32)
             print("t={} -> {} samples seen...".format(T,(T+1)*1000))
             if t%save_every_t == 0:
                 print("Saving net...",end='',flush=True)
                 model.save_weights(work_dir+project+"/nets/AE_net_{}".format(n_epochs+T))
+                with open(work_dir+project+"/nets/avg_img_{}".format(n_epochs+T),'wb') as f:
+                    pickle.dump(avg, f, pickle.HIGHEST_PROTOCOL)
                 print("[x]")
 
 if testing:
@@ -107,19 +122,19 @@ if testing:
             pickle.dump(conv_weights_from_file(size,net), out_file, pickle.HIGHEST_PROTOCOL)
         idx += 1
 
-''' Get some stats '''
-if testing and False:
-
-    for net in files:
-        model.load_weights(net)
-        result = np.empty((18000))
-        for i, infile in enumerate(os.listdir(work_dir)):
-            with open(work_dir+"/"+infile,'rb') as file:
-                data, _ = load_file(file)
-            predictions = model.predict(data)
-            true_answer = data
-            result[i*1000:(i+1)*1000] = np.mean( (predictions-true_answer)**2, axis=(1,2,3) )
-        print("[{}] ::  Mean(MSE): {} \t Var(MSE): {}".format(net, np.mean(result),np.var(result) ))
+# ''' Get some stats '''
+# if testing and False:
+#
+#     for net in files:
+#         model.load_weights(net)
+#         result = np.empty((18000))
+#         for i, infile in enumerate(os.listdir(work_dir)):
+#             with open(work_dir+"/"+infile,'rb') as file:
+#                 data, _, _, _ = load_file(file)
+#             predictions = model.predict(data)
+#             true_answer = data
+#             result[i*1000:(i+1)*1000] = np.mean( (predictions-true_answer)**2, axis=(1,2,3) )
+#         print("[{}] ::  Mean(MSE): {} \t Var(MSE): {}".format(net, np.mean(result),np.var(result) ))
 
 ''' Compare inputs and outputs '''
 if testing:
@@ -128,10 +143,14 @@ if testing:
         model.load_weights(net)
         for infile in os.listdir(work_dir+project+"/data"):
             with open(work_dir+project+"/data/"+infile,'rb') as file:
-                data, n = load_file(file)
+                data, _, _, _ = load_file(file)
+                avg_file = work_dir+project+"/avg_img_"+net.split("_")[-1]
+                with open(avg_file, 'rb') as f:
+                    avg = pickle.load(f)
             for i in range(n):
-                org = data[i]
-                clone = model.predict(org[np.newaxis,:])[0]
-                img = np.concatenate((org,clone),axis=1)
+                org = data[i,:,:,:]
+                clone = (model.predict(org[np.newaxis,:]-avg)+avg)[0]
+                # print(org.shape,avg.shape,clone.shape)
+                img = np.concatenate((org,clone,avg[0]),axis=1)
                 plt.imshow(img)
                 plt.show()

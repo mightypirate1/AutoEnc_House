@@ -9,6 +9,7 @@ USE_POOLING = True
 
 def max_abs_error(y_true, y_pred):
     return K.max(K.abs( y_true - y_pred ))
+
 def custom_loss(y_true, y_pred):
     a = 1.0
     b = 1.0
@@ -16,12 +17,15 @@ def custom_loss(y_true, y_pred):
 
 def make_autoencoder(size,lr=0.02):
     initializer = keras.initializers.glorot_uniform()
+    default_activation = keras.layers.ELU(alpha=1.0)
+    # default_activation = keras.layers.Activation('softsign')
 
     # loss_fcn = custom_loss
-    loss_fcn = keras.losses.mean_absolute_error
+    loss_fcn = keras.losses.mean_squared_error#keras.losses.mean_absolute_error
 
     optimizer = Adam(lr=lr)
     # optimizer = keras.optimizers.Adamax(lr=lr)
+    
     conv_depth_1 = 32
     conv_depth_2 = 32
     conv_depth_3 = 16
@@ -33,51 +37,98 @@ def make_autoencoder(size,lr=0.02):
     stride_2 = 1
     stride_3 = 1
 
-    bottleneck_size = 256
+    bottleneck_size = 512
     bottleneck_activity_regularizer = keras.regularizers.l1(0.0)
 
     (fy,fx) = (2,2) if USE_POOLING else (1,1)
 
     input = Input(shape=size)
-    x = Convolution2D(conv_depth_1, size_1, strides=(stride_1,stride_1), padding='same', kernel_initializer=initializer)(input)
-    x = keras.layers.ELU(alpha=1.0)(x)
+    x = Convolution2D(conv_depth_1,
+                      size_1,
+                      use_bias=False,
+                      name='conv_1',
+                      strides=(stride_1,stride_1),
+                      padding='same',
+                      kernel_initializer=initializer) (input)
+    x = default_activation(x)
     x = Dropout(0.2)(x)
 
-    x = Convolution2D(conv_depth_2, size_2, strides=(stride_2,stride_2), padding='same', kernel_initializer=initializer)(x)
-    x = keras.layers.ELU(alpha=1.0)(x)
+    x = Convolution2D(conv_depth_2,
+                      size_2,
+                      use_bias=False,
+                      name='conv_2',
+                      strides=(stride_2,stride_2),
+                      padding='same',
+                      kernel_initializer=initializer)(x)
+    x = default_activation(x)
     x = Dropout(0.2)(x)
 
-    x = Convolution2D(conv_depth_3, size_3, strides=(stride_3,stride_3), padding='same', kernel_initializer=initializer)(input)
-    x = keras.layers.ELU(alpha=1.0)(x)
+    x = Convolution2D(conv_depth_3,
+                      size_3,
+                      use_bias=False,
+                      name='conv_3',
+                      strides=(stride_3,stride_3),
+                      padding='same',
+                      kernel_initializer=initializer)(x)
+    x = default_activation(x)
     x = Dropout(0.2)(x)
 
     # x = MaxPooling2D((stride_3,stride_3))(x)
     x = Flatten()(x)
 
-    encoded = Dense(bottleneck_size, use_bias=False, activity_regularizer=bottleneck_activity_regularizer, kernel_initializer=initializer)(x)
+    encoded = Dense(bottleneck_size,
+                    name='bottleneck',
+                    use_bias=False,
+                    activity_regularizer=bottleneck_activity_regularizer,
+                    kernel_initializer=initializer)(x)
 
-    x = Dense(int(96/stride_3)*int(96/stride_3)*3, kernel_initializer=initializer)(encoded)
-    x = keras.layers.ELU(alpha=1.0)(x)
+    x = Dense(int(size[0]/stride_3)*int(size[1]/stride_3)*3,
+                  use_bias=False,
+                  name='dense_1',
+                  kernel_initializer=initializer)(encoded)
+    x = default_activation(x)
     x = Dropout(0.2)(x)
-    x = keras.layers.Reshape((int(96/stride_3), int(96/stride_3), 3))(x)
+    x = keras.layers.Reshape((int(size[0]/stride_3), int(size[1]/stride_3), 3))(x)
     x = UpSampling2D((stride_3,stride_3))(x)
 
-    x = Convolution2D(conv_depth_3, size_3, strides=(stride_3,stride_3), padding='same', kernel_initializer=initializer)(input)
-    x = keras.layers.ELU(alpha=1.0)(x)
+    x = Convolution2D(conv_depth_3,
+                      size_3,
+                      use_bias=False,
+                      name='deconv_1',
+                      strides=(stride_3,stride_3),
+                      padding='same',
+                      kernel_initializer=initializer)(x)
+    x = default_activation(x)
     x = Dropout(0.2)(x)
 
 
-    x = Convolution2D(conv_depth_2, size_2, padding='same', kernel_initializer=initializer)(x)
-    x = keras.layers.ELU(alpha=1.0)(x)
+    x = Convolution2D(conv_depth_2,
+                      size_2,
+                      use_bias=False,
+                      name='deconv_2',
+                      padding='same',
+                      kernel_initializer=initializer)(x)
+    x = default_activation(x)
     x = Dropout(0.2)(x)
     x = UpSampling2D((stride_1,stride_1))(x)
 
-    x = Convolution2D(conv_depth_1, size_1, padding='same', kernel_initializer=initializer)(x)
-    x = keras.layers.ELU(alpha=1.0)(x)
+    x = Convolution2D(conv_depth_1,
+                      size_1,
+                      use_bias=False,
+                      name='deconv_3',
+                      padding='same',
+                      kernel_initializer=initializer)(x)
+    x = default_activation(x)
     x = Dropout(0.2)(x)
 
-    output = Convolution2D(size[2], (1,1), padding='same', activation='sigmoid', kernel_initializer=initializer)(x)
+    output = Convolution2D(size[2],
+                           (1,1),
+                           use_bias=False,
+                           name='output',
+                           padding='same',
+                           activation='softsign',
+                           kernel_initializer=initializer)(x)
     model = Model(input,output)
-
     model.compile(optimizer=optimizer, loss=loss_fcn)
+    model.summary()
     return model
