@@ -92,7 +92,7 @@ if training :
                 data, _, avg, avg_block = load_file(file)
             history = model.fit(data-avg_block,data-avg_block, batch_size=32)
             print("t={} -> {} samples seen...".format(T,(T+1)*1000))
-            if t%save_every_t == 0:
+            if T%save_every_t == 0:
                 print("Saving net...",end='',flush=True)
                 model.save_weights(work_dir+project+"/nets/AE_net_{}".format(n_epochs+T))
                 with open(work_dir+project+"/nets/avg_img_{}".format(n_epochs+T),'wb') as f:
@@ -144,7 +144,7 @@ if testing:
         for infile in os.listdir(work_dir+project+"/data"):
             with open(work_dir+project+"/data/"+infile,'rb') as file:
                 data, _, _, _ = load_file(file)
-                avg_file = work_dir+project+"/avg_img_"+net.split("_")[-1]
+                avg_file = work_dir+project+"/nets/avg_img_"+net.split("_")[-1]
                 with open(avg_file, 'rb') as f:
                     avg = pickle.load(f)
             for i in range(n):
