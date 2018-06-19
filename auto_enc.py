@@ -12,7 +12,8 @@ from autoencoder_model import make_autoencoder
 MAKE_GRAYSCALE = False
 work_dir = "/knut/"
 project = "dev_env"
-save_every_t = 1
+save_every_t = 100
+display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
 lr = 0.0005
 n = 1000 #numbre of data vectors per file
@@ -150,7 +151,9 @@ if testing:
             for i in range(n):
                 org = data[i,:,:,:]
                 clone = (model.predict(org[np.newaxis,:]-avg)+avg)[0]
-                # print(org.shape,avg.shape,clone.shape)
-                img = np.concatenate((org,clone,avg[0]),axis=1)
-                plt.imshow(img)
-                plt.show()
+                e = np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
+                print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
+                if display_result:
+                    img = np.concatenate((org,clone,avg[0]),axis=1)
+                    plt.imshow(img)
+                    plt.show()
