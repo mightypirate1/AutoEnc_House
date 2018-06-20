@@ -11,7 +11,7 @@ from lsuv_init import LSUVinit
 from autoencoder_model import make_autoencoder
 
 MAKE_GRAYSCALE = False
-work_dir = "/knut/"
+work_dir = "knut/"
 project = "pepper3rd11"#"dev_env"
 save_every_t = 100
 display_result = False
@@ -57,9 +57,9 @@ def load_file(file, make_gray=False, resize=None):
     data = data.astype(np.float32)/255.0
     n = data.shape[0]
     avg = np.mean(data,axis=0)[np.newaxis,:]
-    avg_block = np.concatenate((avg,)*n,axis=0)
     if batch_normalization:
-        avg_block *= 0.0
+        avg *= 0.0
+    avg_block = np.concatenate((avg,)*n,axis=0)
     return data, n, avg, avg_block
 
 ############
