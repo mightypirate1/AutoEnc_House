@@ -16,9 +16,9 @@ project = "pepper3rd11"#"dev_env"
 save_every_t = 100
 display_result = False
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.0005
+lr = 0.001
 n = 1000 #numbre of data vectors per file
-n_epochs = 10000
+n_epochs = 41
 batch_normalization = True
 lsuv_init = True
 first_batch = True
@@ -104,8 +104,8 @@ if training :
             print("t={} -> {} samples seen...".format(T,(T+1)*1000))
             if T%save_every_t == 0:
                 print("Saving net...",end='',flush=True)
-                model.save_weights(work_dir+project+"/nets/AE_net_{}".format(n_epochs+T))
-                with open(work_dir+project+"/nets/avg_img_{}".format(n_epochs+T),'wb') as f:
+                model.save_weights(work_dir+project+"/nets/AE_net_{}".format(10000+T))
+                with open(work_dir+project+"/nets/avg_img_{}".format(10000+T),'wb') as f:
                     pickle.dump(avg, f, pickle.HIGHEST_PROTOCOL)
                 print("[x]")
 
@@ -156,7 +156,7 @@ if testing:
                 data, _, _, _ = load_file(file)
                 avg_file = work_dir+project+"/nets/avg_img_"+net.split("_")[-1]
                 with open(avg_file, 'rb') as f:
-                    avg = pickle.load(f)
+                    avg = pickle.load(f) if not batch_normalization else 0
             for i in range(n):
                 org = data[i,:,:,:]
                 clone = (model.predict(org[np.newaxis,:]-avg)+avg)[0]
