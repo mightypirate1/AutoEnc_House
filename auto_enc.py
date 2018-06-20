@@ -7,18 +7,21 @@ import matplotlib.pyplot as plt
 import cv2
 import keras
 
+from lsuv_init import LSUVinit
 from autoencoder_model import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "/knut/"
-project = "dev_env"
+project = "pepper3rd11"#"dev_env"
 save_every_t = 100
-display_result = not False
+display_result = False
 weight_file = "weights" #for outputing weights of the net in a file....
 lr = 0.0005
 n = 1000 #numbre of data vectors per file
 n_epochs = 10000
-
+batch_normalization = True
+lsuv_init = True
+first_batch = True
 
 def conv_weights_from_file(size,file):
     model = make_autoencoder(size)
@@ -55,6 +58,8 @@ def load_file(file, make_gray=False, resize=None):
     n = data.shape[0]
     avg = np.mean(data,axis=0)[np.newaxis,:]
     avg_block = np.concatenate((avg,)*n,axis=0)
+    if batch_normalization:
+        avg_block *= 0.0
     return data, n, avg, avg_block
 
 ############
@@ -81,8 +86,7 @@ size = (96,96,3)
 # avg = np.mean(mnist, axis=0)[np.newaxis,:,:,:]
 # avg_block = np.concatenate((avg,)*1000,axis=0)
 
-model = make_autoencoder(size=size,lr=lr)
-
+model = make_autoencoder(size=size,lr=lr,bn=batch_normalization)
 
 if training :
     T=-1
@@ -91,6 +95,11 @@ if training :
             T+=1
             with open(work_dir+project+"/data/"+infile,'rb') as file:
                 data, _, avg, avg_block = load_file(file)
+
+            if lsuv_init and first_batch:
+                first_batch = False
+                model = LSUVinit(model, data[:100,:,:,:])
+
             history = model.fit(data-avg_block,data-avg_block, batch_size=32)
             print("t={} -> {} samples seen...".format(T,(T+1)*1000))
             if T%save_every_t == 0:

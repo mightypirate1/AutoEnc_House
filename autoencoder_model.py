@@ -2,7 +2,7 @@ import keras
 from keras.datasets import mnist
 from keras.models import Model
 from keras.optimizers import Adam
-from keras.layers import Input, Lambda, Convolution2D, MaxPooling2D, Dropout, Flatten, Dense, concatenate, UpSampling2D
+from keras.layers import Input, Lambda, Convolution2D, MaxPooling2D, Dropout, Flatten, Dense, concatenate, UpSampling2D, BatchNormalization
 from keras import backend as K
 
 USE_POOLING = True
@@ -15,7 +15,7 @@ def custom_loss(y_true, y_pred):
     b = 1.0
     return a*max_abs_error(y_true, y_pred) + b*keras.losses.mean_absolute_error(y_true, y_pred)
 
-def make_autoencoder(size,lr=0.02):
+def make_autoencoder(size,lr=0.02,bn=False):
     initializer = keras.initializers.glorot_uniform()
     default_activation = keras.layers.ELU(alpha=1.0)
     # default_activation = keras.layers.Activation('softsign')
@@ -25,7 +25,7 @@ def make_autoencoder(size,lr=0.02):
 
     optimizer = Adam(lr=lr)
     # optimizer = keras.optimizers.Adamax(lr=lr)
-    
+
     conv_depth_1 = 32
     conv_depth_2 = 32
     conv_depth_3 = 16
@@ -51,6 +51,8 @@ def make_autoencoder(size,lr=0.02):
                       padding='same',
                       kernel_initializer=initializer) (input)
     x = default_activation(x)
+    if bn:
+        x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
 
     x = Convolution2D(conv_depth_2,
@@ -61,6 +63,8 @@ def make_autoencoder(size,lr=0.02):
                       padding='same',
                       kernel_initializer=initializer)(x)
     x = default_activation(x)
+    if bn:
+        x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
 
     x = Convolution2D(conv_depth_3,
@@ -71,6 +75,8 @@ def make_autoencoder(size,lr=0.02):
                       padding='same',
                       kernel_initializer=initializer)(x)
     x = default_activation(x)
+    if bn:
+        x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
 
     # x = MaxPooling2D((stride_3,stride_3))(x)
@@ -87,6 +93,8 @@ def make_autoencoder(size,lr=0.02):
                   name='dense_1',
                   kernel_initializer=initializer)(encoded)
     x = default_activation(x)
+    if bn:
+        x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
     x = keras.layers.Reshape((int(size[0]/stride_3), int(size[1]/stride_3), 3))(x)
     x = UpSampling2D((stride_3,stride_3))(x)
@@ -99,6 +107,8 @@ def make_autoencoder(size,lr=0.02):
                       padding='same',
                       kernel_initializer=initializer)(x)
     x = default_activation(x)
+    if bn:
+        x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
 
 
@@ -109,6 +119,8 @@ def make_autoencoder(size,lr=0.02):
                       padding='same',
                       kernel_initializer=initializer)(x)
     x = default_activation(x)
+    if bn:
+        x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
     x = UpSampling2D((stride_1,stride_1))(x)
 
@@ -119,6 +131,8 @@ def make_autoencoder(size,lr=0.02):
                       padding='same',
                       kernel_initializer=initializer)(x)
     x = default_activation(x)
+    if bn:
+        x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
 
     output = Convolution2D(size[2],
