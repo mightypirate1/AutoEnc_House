@@ -146,7 +146,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                            kernel_initializer=initializer)(x)
     model = Model(input,output)
     peephole_model = Model(input,snoop)
-    peephole_model.compile()
+    peephole_model.compile(optimizer=optimizer, loss=loss_fcn)
     model.compile(optimizer=optimizer, loss=loss_fcn)
-    model.summary(optimizer=optimizer, loss=loss_fcn)
+    model.summary()
     return model, peephole_model
