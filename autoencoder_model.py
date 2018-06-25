@@ -148,5 +148,5 @@ def make_autoencoder(size,lr=0.02,bn=False):
     peephole_model = Model(input,snoop)
     peephole_model.compile()
     model.compile(optimizer=optimizer, loss=loss_fcn)
-    model.summary()
+    model.summary(optimizer=optimizer, loss=loss_fcn)
     return model, peephole_model
