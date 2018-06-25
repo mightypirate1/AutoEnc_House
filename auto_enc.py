@@ -19,8 +19,8 @@ weight_file = "weights" #for outputing weights of the net in a file....
 lr = 0.00005
 n = 1000 #numbre of data vectors per file
 n_epochs = 41
-batch_normalization = True
-lsuv_init = True
+batch_normalization = not True
+lsuv_init = not True
 first_batch = True
 
 def conv_weights_from_file(size,file):
