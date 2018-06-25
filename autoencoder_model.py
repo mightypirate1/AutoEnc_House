@@ -1,7 +1,7 @@
 import keras
 from keras.datasets import mnist
 from keras.models import Model
-from keras.optimizers import Adam
+from keras.optimizers import Adam,SGD
 from keras.layers import Input, Lambda, Convolution2D, MaxPooling2D, Dropout, Flatten, Dense, concatenate, UpSampling2D, BatchNormalization
 from keras import backend as K
 
@@ -11,7 +11,7 @@ def max_abs_error(y_true, y_pred):
     return K.max(K.abs( y_true - y_pred ))
 
 def custom_loss(y_true, y_pred):
-    a = 1.0
+    a = 0.1
     b = 1.0
     return a*max_abs_error(y_true, y_pred) + b*keras.losses.mean_absolute_error(y_true, y_pred)
 
@@ -20,10 +20,11 @@ def make_autoencoder(size,lr=0.02,bn=False):
     default_activation = keras.layers.ELU(alpha=1.0)
     # default_activation = keras.layers.Activation('softsign')
 
-    # loss_fcn = custom_loss
-    loss_fcn = keras.losses.mean_squared_error#keras.losses.mean_absolute_error
+    loss_fcn = custom_loss
+    # loss_fcn = keras.losses.mean_squared_error#keras.losses.mean_absolute_error
 
     optimizer = Adam(lr=lr)
+    # optimizer = SGD(lr=lr)
     # optimizer = keras.optimizers.Adamax(lr=lr)
 
     conv_depth_1 = 32
@@ -77,6 +78,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = default_activation(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
+    snoop = x
     x = Dropout(0.2)(x)
 
     # x = MaxPooling2D((stride_3,stride_3))(x)
@@ -143,6 +145,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
                            activation='softsign',
                            kernel_initializer=initializer)(x)
     model = Model(input,output)
+    peephole_model = Model(input,snoop)
+    peephole_model.compile()
     model.compile(optimizer=optimizer, loss=loss_fcn)
     model.summary()
-    return model
+    return model, peephole_model

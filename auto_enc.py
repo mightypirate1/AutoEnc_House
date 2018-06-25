@@ -16,7 +16,7 @@ project = "pepper3rd11"#"dev_env"
 save_every_t = 100
 display_result = False
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.001
+lr = 0.00005
 n = 1000 #numbre of data vectors per file
 n_epochs = 41
 batch_normalization = True
@@ -86,7 +86,7 @@ size = (96,96,3)
 # avg = np.mean(mnist, axis=0)[np.newaxis,:,:,:]
 # avg_block = np.concatenate((avg,)*1000,axis=0)
 
-model = make_autoencoder(size=size,lr=lr,bn=batch_normalization)
+model, snoop = make_autoencoder(size=size,lr=lr,bn=batch_normalization)
 
 if training :
     T=-1
@@ -160,9 +160,12 @@ if testing:
             for i in range(n):
                 org = data[i,:,:,:]
                 clone = (model.predict(org[np.newaxis,:]-avg)+avg)[0]
+                snoop_layers = snoop.predict(org[np.newaxis,:]-avg)[0]
                 e = np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
                 print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
                 if display_result:
-                    img = np.concatenate((org,clone,avg[0]),axis=1)
+                    snoop_destack_tuple = tuple([snoop_layers[:,:,i:i+3] for i in range(16-3)])
+                    snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
+                    img = np.concatenate((org,clone,snoop_img),axis=1)
                     plt.imshow(img)
                     plt.show()
