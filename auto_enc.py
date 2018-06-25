@@ -24,7 +24,7 @@ lsuv_init = not True
 first_batch = True
 
 def conv_weights_from_file(size,file):
-    model = make_autoencoder(size)
+    model,snoop = make_autoencoder(size)
     model.load_weights(file)
     weights = []
     for layer in model.layers:
@@ -164,7 +164,7 @@ if testing:
                 e = np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
                 print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
                 if display_result:
-                    snoop_destack_tuple = tuple([snoop_layers[:,:,i:i+3] for i in range(16-3)])
+                    snoop_destack_tuple = tuple([ (i%2)+(-1)**(i%2) *snoop_layers[:,:,i:i+3] for i in range(16-3)])
                     snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
                     img = np.concatenate((org,clone,snoop_img),axis=1)
                     plt.imshow(img)
