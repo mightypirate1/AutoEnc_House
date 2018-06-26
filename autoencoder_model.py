@@ -25,7 +25,7 @@ def spatial_softmax_blueprint(x):
     return z / w
 get_custom_objects().update({'spatial_softmax': Activation(spatial_softmax_blueprint)})
 
-def make_autoencoder(size,lr=0.02,bn=False):
+def make_autoencoder(size,lr=0.02,bn=False, use_softmax=False):
     initializer = keras.initializers.glorot_uniform()
     default_activation = keras.layers.ELU(alpha=1.0)
     spatial_softmax = Activation(spatial_softmax_blueprint)
@@ -86,8 +86,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                       strides=(stride_3,stride_3),
                       padding='same',
                       kernel_initializer=initializer)(x)
-    # x = default_activation(x)
-    x = spatial_softmax(x)
+    x = spatial_softmax(x) if use_softmax else default_activation(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     snoop = x

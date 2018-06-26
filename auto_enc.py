@@ -22,6 +22,7 @@ n_epochs = 41
 batch_normalization = not True
 lsuv_init = not True
 first_batch = True
+use_softmax = True
 
 def conv_weights_from_file(size,file):
     model,snoop = make_autoencoder(size)
@@ -86,7 +87,7 @@ size = (96,96,3)
 # avg = np.mean(mnist, axis=0)[np.newaxis,:,:,:]
 # avg_block = np.concatenate((avg,)*1000,axis=0)
 
-model, snoop = make_autoencoder(size=size,lr=lr,bn=batch_normalization)
+model, snoop = make_autoencoder(size=size,lr=lr,bn=batch_normalization, use_softmax=use_softmax)
 
 if training :
     T=-1
