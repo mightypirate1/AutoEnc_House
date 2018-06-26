@@ -12,11 +12,11 @@ from autoencoder_model import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
-project = "pepper3rd11"#"dev_env"
-save_every_t = 100
-display_result = False
+project = "pepperBig_trial2"#"dev_env"
+save_every_t = 10
+display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.00005
+lr = 0.0005
 n = 1000 #numbre of data vectors per file
 n_epochs = 41
 batch_normalization = not True
@@ -95,7 +95,6 @@ if training :
             T+=1
             with open(work_dir+project+"/data/"+infile,'rb') as file:
                 data, _, avg, avg_block = load_file(file)
-
             if lsuv_init and first_batch:
                 first_batch = False
                 model = LSUVinit(model, data[:100,:,:,:])
@@ -164,7 +163,7 @@ if testing:
                 e = np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
                 print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
                 if display_result:
-                    snoop_destack_tuple = tuple([ (i%2)+(-1)**(i%2) *snoop_layers[:,:,i:i+3] for i in range(16-3)])
+                    snoop_destack_tuple = tuple([ (0.2**(i%2))+snoop_layers[:,:,i:i+3] for i in range(16-3)])
                     snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
                     img = np.concatenate((org,clone,snoop_img),axis=1)
                     plt.imshow(img)

@@ -2,8 +2,9 @@ import keras
 from keras.datasets import mnist
 from keras.models import Model
 from keras.optimizers import Adam,SGD
-from keras.layers import Input, Lambda, Convolution2D, MaxPooling2D, Dropout, Flatten, Dense, concatenate, UpSampling2D, BatchNormalization
+from keras.layers import Input, Lambda, Convolution2D, MaxPooling2D, Dropout, Flatten, Dense, concatenate, UpSampling2D, BatchNormalization, Activation
 from keras import backend as K
+from keras.utils.generic_utils import get_custom_objects
 
 USE_POOLING = True
 
@@ -15,9 +16,19 @@ def custom_loss(y_true, y_pred):
     b = 1.0
     return a*max_abs_error(y_true, y_pred) + b*keras.losses.mean_absolute_error(y_true, y_pred)
 
+def spatial_softmax_blueprint(x):
+    z = K.exp(x)
+    w = K.sum(z,axis=1)
+    w = K.sum(w,axis=1)
+    # print(w,z / w)
+    # exit()
+    return z / w
+get_custom_objects().update({'spatial_softmax': Activation(spatial_softmax_blueprint)})
+
 def make_autoencoder(size,lr=0.02,bn=False):
     initializer = keras.initializers.glorot_uniform()
     default_activation = keras.layers.ELU(alpha=1.0)
+    spatial_softmax = Activation(spatial_softmax_blueprint)
     # default_activation = keras.layers.Activation('softsign')
 
     loss_fcn = custom_loss
@@ -75,7 +86,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
                       strides=(stride_3,stride_3),
                       padding='same',
                       kernel_initializer=initializer)(x)
-    x = default_activation(x)
+    # x = default_activation(x)
+    x = spatial_softmax(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     snoop = x
