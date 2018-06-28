@@ -49,16 +49,16 @@ def make_autoencoder(size,lr=0.02,bn=False):
     conv_depth_2 = 32
     conv_depth_3 = 16
 
-    size_1 = (5,5)#(8,8)
-    size_2 = (5,5)
-    size_3 = (5,5)
+    size_1 = (7,7)#(8,8)
+    size_2 = (7,7)
+    size_3 = (7,7)
     stride_1 = 1
     stride_2 = 1
     stride_3 = 1
 
     bottleneck_size = 128
-    bottleneck_activity_regularizer = keras.regularizers.l1(0.01)
-    default_regularizer = keras.regularizers.l2(0.01)
+    bottleneck_activity_regularizer = keras.regularizers.l1(0.001)
+    default_regularizer = keras.regularizers.l2(0.001)
 
     (fy,fx) = (2,2) if USE_POOLING else (1,1)
 
