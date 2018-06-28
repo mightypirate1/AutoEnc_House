@@ -8,11 +8,11 @@ import cv2
 import keras
 
 from lsuv_init import LSUVinit
-from autoencoder_model import make_autoencoder
+from spatial_autoencoder_model import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
-project = "pepperBig_trial2"#"dev_env"
+project = "pepperBig_trial2/"#"dev_env"
 save_every_t = 10
 display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
@@ -22,10 +22,9 @@ n_epochs = 41
 batch_normalization = not True
 lsuv_init = not True
 first_batch = True
-use_softmax = True
 
 def conv_weights_from_file(size,file):
-    model,snoop = make_autoencoder(size)
+    model,_,_ = make_autoencoder(size)
     model.load_weights(file)
     weights = []
     for layer in model.layers:
@@ -87,7 +86,7 @@ size = (96,96,3)
 # avg = np.mean(mnist, axis=0)[np.newaxis,:,:,:]
 # avg_block = np.concatenate((avg,)*1000,axis=0)
 
-model, snoop = make_autoencoder(size=size,lr=lr,bn=batch_normalization, use_softmax=use_softmax)
+model, snoop, position = make_autoencoder(size=size,lr=lr,bn=batch_normalization)
 
 if training :
     T=-1
@@ -161,10 +160,13 @@ if testing:
                 org = data[i,:,:,:]
                 clone = (model.predict(org[np.newaxis,:]-avg)+avg)[0]
                 snoop_layers = snoop.predict(org[np.newaxis,:]-avg)[0]
+                positions = position.predict(org[np.newaxis,:]-avg)[0]
                 e = np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
                 print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
                 if display_result:
-                    snoop_destack_tuple = tuple([ (0.2**(i%2))+snoop_layers[:,:,i:i+3] for i in range(16-3)])
+                    for i in range(positions.shape[1]):
+                        print("Feature {} pos: ({},{})".format(i,positions[0,i], positions[1,i])
+                    snoop_destack_tuple = tuple([ (0.2**(i%2))+(-1)**(i%2)*snoop_layers[:,:,i:i+3] for i in range(16-3)])
                     snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
                     img = np.concatenate((org,clone,snoop_img),axis=1)
                     plt.imshow(img)

@@ -36,8 +36,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     default_activation = keras.layers.ELU(alpha=1.0)
     # default_activation = keras.layers.Activation('softsign')
 
-    loss_fcn = custom_loss
-    # loss_fcn = keras.losses.mean_squared_error#keras.losses.mean_absolute_error
+    # loss_fcn = custom_loss
+    loss_fcn = keras.losses.mean_squared_error#keras.losses.mean_absolute_error
 
     optimizer = Adam(lr=lr)
     # optimizer = SGD(lr=lr)
