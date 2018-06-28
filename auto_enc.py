@@ -13,7 +13,7 @@ from spatial_autoencoder_model import make_autoencoder
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
 project = "pepperBig_trial2/"#"dev_env"
-save_every_t = 10
+save_every_t = 100
 display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
 lr = 0.0005
@@ -164,8 +164,8 @@ if testing:
                 e = np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
                 print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
                 if display_result:
-                    for i in range(positions.shape[1]):
-                        print("Feature {} pos: ({},{})".format(i,positions[0,i], positions[1,i]))
+                    for j in range(positions.shape[1]):
+                        print("Feature {} pos: ({},{})".format(j,positions[0,j], positions[1,j]))
                     snoop_destack_tuple = tuple([ (0.2**(i%2))+(-1)**(i%2)*snoop_layers[:,:,i:i+3] for i in range(16-3)])
                     snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
                     img = np.concatenate((org,clone,snoop_img),axis=1)
