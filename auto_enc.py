@@ -165,7 +165,7 @@ if testing:
                 print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
                 if display_result:
                     for i in range(positions.shape[1]):
-                        print("Feature {} pos: ({},{})".format(i,positions[0,i], positions[1,i])
+                        print("Feature {} pos: ({},{})".format(i,positions[0,i], positions[1,i]))
                     snoop_destack_tuple = tuple([ (0.2**(i%2))+(-1)**(i%2)*snoop_layers[:,:,i:i+3] for i in range(16-3)])
                     snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
                     img = np.concatenate((org,clone,snoop_img),axis=1)
