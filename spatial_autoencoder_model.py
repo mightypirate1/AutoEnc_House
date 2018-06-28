@@ -4,7 +4,6 @@ from keras.models import Model
 from keras.optimizers import Adam,SGD
 from keras.layers import Input, Lambda, Convolution2D, MaxPooling2D, Dropout, Flatten, Dense, Concatenate, UpSampling2D, BatchNormalization, Activation
 from keras import backend as K
-from keras.utils.generic_utils import get_custom_objects
 import numpy as np
 
 USE_POOLING = True
@@ -32,6 +31,9 @@ def custom_loss(y_true, y_pred):
     return a*max_abs_error(y_true, y_pred) + b*keras.losses.mean_absolute_error(y_true, y_pred)
 
 def make_autoencoder(size,lr=0.02,bn=False):
+
+    allow_bias = True
+
     initializer = keras.initializers.glorot_uniform()
     default_activation = keras.layers.ELU(alpha=1.0)
     # default_activation = keras.layers.Activation('softsign')
@@ -54,7 +56,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
     stride_2 = 1
     stride_3 = 1
 
-    bottleneck_size = 512
+    bottleneck_size = 128
     bottleneck_activity_regularizer = keras.regularizers.l1(0.0)
 
     (fy,fx) = (2,2) if USE_POOLING else (1,1)
@@ -62,7 +64,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
     input = Input(shape=size)
     x = Convolution2D(conv_depth_1,
                       size_1,
-                      use_bias=False,
+                      use_bias=allow_bias,
                       name='conv_1',
                       strides=(stride_1,stride_1),
                       padding='same',
@@ -74,7 +76,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     x = Convolution2D(conv_depth_2,
                       size_2,
-                      use_bias=False,
+                      use_bias=allow_bias,
                       name='conv_2',
                       strides=(stride_2,stride_2),
                       padding='same',
@@ -86,7 +88,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     x = Convolution2D(conv_depth_3,
                       size_3,
-                      use_bias=False,
+                      use_bias=allow_bias,
                       name='conv_3',
                       strides=(stride_3,stride_3),
                       padding='same',
@@ -95,8 +97,10 @@ def make_autoencoder(size,lr=0.02,bn=False):
     if bn:
         x = BatchNormalization(axis=-1)(x)
 
+    ''' He we smuggle out some information... '''
     snoop = x
     positions = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3))
+    ''' ------------------------------------- '''
 
     x = Dropout(0.2)(x)
 
@@ -110,7 +114,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                     kernel_initializer=initializer)(x)
 
     x = Dense(int(size[0]/stride_3)*int(size[1]/stride_3)*3,
-                  use_bias=False,
+                  use_bias=allow_bias,
                   name='dense_1',
                   kernel_initializer=initializer)(encoded)
     x = default_activation(x)
@@ -122,7 +126,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     x = Convolution2D(conv_depth_3,
                       size_3,
-                      use_bias=False,
+                      use_bias=allow_bias,
                       name='deconv_1',
                       strides=(stride_3,stride_3),
                       padding='same',
@@ -135,7 +139,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     x = Convolution2D(conv_depth_2,
                       size_2,
-                      use_bias=False,
+                      use_bias=allow_bias,
                       name='deconv_2',
                       padding='same',
                       kernel_initializer=initializer)(x)
@@ -147,7 +151,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     x = Convolution2D(conv_depth_1,
                       size_1,
-                      use_bias=False,
+                      use_bias=allow_bias,
                       name='deconv_3',
                       padding='same',
                       kernel_initializer=initializer)(x)
@@ -158,10 +162,10 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     output = Convolution2D(size[2],
                            (1,1),
-                           use_bias=False,
+                           use_bias=allow_bias,
                            name='output',
                            padding='same',
-                           activation='softsign',
+                           activation='linear',
                            kernel_initializer=initializer)(x)
     model = Model(input,output)
     model.compile(optimizer=optimizer, loss=loss_fcn)
