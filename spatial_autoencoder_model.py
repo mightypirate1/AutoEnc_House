@@ -57,7 +57,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     stride_3 = 1
 
     bottleneck_size = 128
-    bottleneck_activity_regularizer = keras.regularizers.l1(0.0)
+    bottleneck_activity_regularizer = keras.regularizers.l1(0.01)
+    default_regularizer = keras.regularizers.l2(0.01)
 
     (fy,fx) = (2,2) if USE_POOLING else (1,1)
 
@@ -65,6 +66,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = Convolution2D(conv_depth_1,
                       size_1,
                       use_bias=allow_bias,
+                      kernel_regularizer=default_regularizer,
+                      bias_regularizer=default_regularizer,
                       name='conv_1',
                       strides=(stride_1,stride_1),
                       padding='same',
@@ -77,6 +80,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = Convolution2D(conv_depth_2,
                       size_2,
                       use_bias=allow_bias,
+                      kernel_regularizer=default_regularizer,
+                      bias_regularizer=default_regularizer,
                       name='conv_2',
                       strides=(stride_2,stride_2),
                       padding='same',
@@ -89,6 +94,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = Convolution2D(conv_depth_3,
                       size_3,
                       use_bias=allow_bias,
+                      kernel_regularizer=default_regularizer,
+                      bias_regularizer=default_regularizer,
                       name='conv_3',
                       strides=(stride_3,stride_3),
                       padding='same',
@@ -114,7 +121,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                     kernel_initializer=initializer)(x)
 
     x = Dense(int(size[0]/stride_3)*int(size[1]/stride_3)*3,
-                  use_bias=allow_bias,
+                  use_bias=False,
                   name='dense_1',
                   kernel_initializer=initializer)(encoded)
     x = default_activation(x)
@@ -127,6 +134,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = Convolution2D(conv_depth_3,
                       size_3,
                       use_bias=allow_bias,
+                      kernel_regularizer=default_regularizer,
+                      bias_regularizer=default_regularizer,
                       name='deconv_1',
                       strides=(stride_3,stride_3),
                       padding='same',
@@ -140,6 +149,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = Convolution2D(conv_depth_2,
                       size_2,
                       use_bias=allow_bias,
+                      kernel_regularizer=default_regularizer,
+                      bias_regularizer=default_regularizer,
                       name='deconv_2',
                       padding='same',
                       kernel_initializer=initializer)(x)
@@ -152,6 +163,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = Convolution2D(conv_depth_1,
                       size_1,
                       use_bias=allow_bias,
+                      kernel_regularizer=default_regularizer,
+                      bias_regularizer=default_regularizer,
                       name='deconv_3',
                       padding='same',
                       kernel_initializer=initializer)(x)
@@ -163,6 +176,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     output = Convolution2D(size[2],
                            (1,1),
                            use_bias=allow_bias,
+                           kernel_regularizer=default_regularizer,
+                           bias_regularizer=default_regularizer,
                            name='output',
                            padding='same',
                            activation='linear',
