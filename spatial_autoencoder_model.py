@@ -105,7 +105,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     ''' He we smuggle out some information... '''
     snoop = x
-    positions = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3),alpha=3.0,beta=-1.0)
+    positions = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3),alpha=13.0,beta=-1.0)
     ''' ------------------------------------- '''
 
     x = Dropout(0.2)(x)
