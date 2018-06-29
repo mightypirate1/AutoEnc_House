@@ -114,12 +114,10 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = Dropout(0.2)(x)
     x = Dense(dense_size_1,
                     name='dense_1',
-                    use_bias=False,
                     kernel_initializer=initializer)(x)
     x = default_activation(x)
     x = Dropout(0.2)(x)
     x = Dense(size[0]*size[1]*size[2],
-                  use_bias=False,
                   name='dense_2',
                   kernel_initializer=initializer)(x)
     x = default_activation(x)

@@ -12,13 +12,13 @@ from spatial_autoencoder_model2 import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
-project = "pepperBig_spacialTest/"#"dev_env"
-save_every_t = 100
+project = "pepperBig_spatialTest/"#"dev_env"
+save_every_t = 1000
 display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.00005
+lr = 0.000005
 n = 1000 #numbre of data vectors per file
-n_epochs = 41
+n_epochs = 4100
 batch_normalization = not True
 lsuv_init = not True
 first_batch = True
@@ -152,7 +152,7 @@ if testing:
         model.load_weights(net)
         for infile in os.listdir(work_dir+project+"/data"):
             with open(work_dir+project+"/data/"+infile,'rb') as file:
-                data, _, _, _ = load_file(file)
+                data, n, _, _ = load_file(file)
                 avg_file = work_dir+project+"/nets/avg_img_"+net.split("_")[-1]
                 with open(avg_file, 'rb') as f:
                     avg = pickle.load(f) if not batch_normalization else 0
