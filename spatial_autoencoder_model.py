@@ -8,9 +8,9 @@ import numpy as np
 
 USE_POOLING = True
 
-def spatial_soft_argmax(z,size):
+def spatial_soft_argmax(z,size, alpha=1.0, beta=0.0):
     pos_x, pos_y = space_blocks(size)
-    exp_z = Lambda( lambda a : K.exp(a-1) )(z)
+    exp_z = Lambda( lambda a : K.exp(alpha*(a+beta)) )(z)
     softmax = Lambda( lambda a : a / K.sum(K.sum(a,axis=1,keepdims=True),axis=2,keepdims=True) )(exp_z)
     x = Lambda(lambda a : K.sum(K.sum(a*pos_x,axis=1,keepdims=True),axis=2,keepdims=False))(softmax)
     y = Lambda(lambda a : K.sum(K.sum(a*pos_y,axis=1,keepdims=True),axis=2,keepdims=False))(softmax)
@@ -105,7 +105,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     ''' He we smuggle out some information... '''
     snoop = x
-    positions = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3))
+    positions = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3),alpha=3.0,beta=-1.0)
     ''' ------------------------------------- '''
 
     x = Dropout(0.2)(x)
