@@ -47,7 +47,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     conv_depth_1 = 32
     conv_depth_2 = 32
-    conv_depth_3 = 16
+    conv_depth_3 = 32
 
     size_1 = (7,7)#(8,8)
     size_2 = (7,7)
@@ -56,7 +56,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
     stride_2 = 1
     stride_3 = 1
 
-    bottleneck_size = 128
+    dense_size_1 = 512
     bottleneck_activity_regularizer = keras.regularizers.l1(0.01)
     default_regularizer = keras.regularizers.l2(0.01)
 
@@ -106,82 +106,32 @@ def make_autoencoder(size,lr=0.02,bn=False):
 
     ''' He we smuggle out some information... '''
     snoop = x
-    positions = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3))
+    encoded = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3))
+    positions = encoded
     ''' ------------------------------------- '''
 
+    x = Flatten()(encoded)
     x = Dropout(0.2)(x)
-
-    # x = MaxPooling2D((stride_3,stride_3))(x)
-    x = Flatten()(x)
-
-    encoded = Dense(bottleneck_size,
-                    name='bottleneck',
+    x = Dense(dense_size_1,
+                    name='dense_1',
                     use_bias=False,
-                    activity_regularizer=bottleneck_activity_regularizer,
                     kernel_initializer=initializer)(x)
-    x = default_activation(x) #THIS WAS NOT HERE WHEN TRAINING SUCCEDED
-    x = Dense(int(size[0]/stride_3)*int(size[1]/stride_3)*3,
+    x = default_activation(x)
+    x = Dropout(0.2)(x)
+    x = Dense(size[0]*size[1]*size[2],
                   use_bias=False,
-                  name='dense_1',
-                  kernel_initializer=initializer)(encoded)
+                  name='dense_2',
+                  kernel_initializer=initializer)(x)
     x = default_activation(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
-    x = keras.layers.Reshape((int(size[0]/stride_3), int(size[1]/stride_3), 3))(x)
-    x = UpSampling2D((stride_3,stride_3))(x)
-
-    x = Convolution2D(conv_depth_3,
-                      size_3,
-                      use_bias=allow_bias,
-                      kernel_regularizer=default_regularizer,
-                      bias_regularizer=default_regularizer,
-                      name='deconv_1',
-                      strides=(stride_3,stride_3),
-                      padding='same',
-                      kernel_initializer=initializer)(x)
-    x = default_activation(x)
-    if bn:
-        x = BatchNormalization(axis=-1)(x)
-    x = Dropout(0.2)(x)
+    x = keras.layers.Reshape( size )(x)
 
 
-    x = Convolution2D(conv_depth_2,
-                      size_2,
-                      use_bias=allow_bias,
-                      kernel_regularizer=default_regularizer,
-                      bias_regularizer=default_regularizer,
-                      name='deconv_2',
-                      padding='same',
-                      kernel_initializer=initializer)(x)
-    x = default_activation(x)
-    if bn:
-        x = BatchNormalization(axis=-1)(x)
-    x = Dropout(0.2)(x)
-    x = UpSampling2D((stride_1,stride_1))(x)
 
-    x = Convolution2D(conv_depth_1,
-                      size_1,
-                      use_bias=allow_bias,
-                      kernel_regularizer=default_regularizer,
-                      bias_regularizer=default_regularizer,
-                      name='deconv_3',
-                      padding='same',
-                      kernel_initializer=initializer)(x)
-    x = default_activation(x)
-    if bn:
-        x = BatchNormalization(axis=-1)(x)
-    x = Dropout(0.2)(x)
+    output = x
 
-    output = Convolution2D(size[2],
-                           (1,1),
-                           use_bias=allow_bias,
-                           kernel_regularizer=default_regularizer,
-                           bias_regularizer=default_regularizer,
-                           name='output',
-                           padding='same',
-                           activation='linear',
-                           kernel_initializer=initializer)(x)
     model = Model(input,output)
     model.compile(optimizer=optimizer, loss=loss_fcn)
     model.summary()

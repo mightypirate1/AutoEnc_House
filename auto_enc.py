@@ -8,15 +8,15 @@ import cv2
 import keras
 
 from lsuv_init import LSUVinit
-from spatial_autoencoder_model import make_autoencoder
+from spatial_autoencoder_model2 import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
-project = "pepperBig_trial2/"#"dev_env"
+project = "pepperBig_spacialTest/"#"dev_env"
 save_every_t = 100
 display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.0005
+lr = 0.00005
 n = 1000 #numbre of data vectors per file
 n_epochs = 41
 batch_normalization = not True
@@ -164,9 +164,9 @@ if testing:
                 e = np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
                 print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
                 if display_result:
-                    for j in range(positions.shape[1]/3):
+                    for j in range(positions.shape[1]):
                         print("Feature {} pos: ({},{})".format(j,positions[0,j], positions[1,j]))
-                    snoop_destack_tuple = tuple([ (0.2**(i%2))+(-1)**(i%2)*snoop_layers[:,:,3*i:3*(i+1)] for i in range(16-3)])
+                    snoop_destack_tuple = tuple([ (0.2**(i%2))+(-1)**(i%2)*snoop_layers[:,:,3*i:3*(i+1)] for i in range(5)])
                     snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
                     img = np.concatenate((org,clone,snoop_img),axis=1)
                     plt.imshow(img)
