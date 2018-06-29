@@ -49,9 +49,9 @@ def make_autoencoder(size,lr=0.02,bn=False):
     conv_depth_2 = 32
     conv_depth_3 = 16
 
-    size_1 = (7,7)#(8,8)
-    size_2 = (7,7)
-    size_3 = (7,7)
+    size_1 = (5,5)#(8,8)
+    size_2 = (5,5)
+    size_3 = (5,5)
     stride_1 = 1
     stride_2 = 1
     stride_3 = 1
@@ -119,11 +119,11 @@ def make_autoencoder(size,lr=0.02,bn=False):
                     use_bias=False,
                     activity_regularizer=bottleneck_activity_regularizer,
                     kernel_initializer=initializer)(x)
-    x = default_activation(x) #THIS WAS NOT HERE WHEN TRAINING SUCCEDED
+    x = default_activation(encoded) #THIS WAS NOT HERE WHEN TRAINING SUCCEDED
     x = Dense(int(size[0]/stride_3)*int(size[1]/stride_3)*3,
                   use_bias=False,
                   name='dense_1',
-                  kernel_initializer=initializer)(encoded)
+                  kernel_initializer=initializer)(x)
     x = default_activation(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
