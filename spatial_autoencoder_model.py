@@ -118,7 +118,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                     use_bias=False,
                     activity_regularizer=bottleneck_activity_regularizer,
                     kernel_initializer=initializer)(x)
-    x = default_activation(encoded) #THIS WAS NOT HERE WHEN TRAINING SUCCEDED
+    x = keras.layers.ELU(alpha=1.0)(encoded) #THIS WAS NOT HERE WHEN TRAINING SUCCEDED
     x = Dense(int(size[0]/stride_3)*int(size[1]/stride_3)*3,
                   use_bias=False,
                   name='dense_1',
