@@ -57,8 +57,8 @@ def make_autoencoder(size,lr=0.02,bn=False):
     stride_3 = 1
 
     bottleneck_size = 128
-    bottleneck_activity_regularizer = keras.regularizers.l1(0.001)
-    default_regularizer = keras.regularizers.l2(0.001)
+    bottleneck_activity_regularizer = keras.regularizers.l1(0.01)
+    default_regularizer = keras.regularizers.l2(0.01)
 
     (fy,fx) = (2,2) if USE_POOLING else (1,1)
 
