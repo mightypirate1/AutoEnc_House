@@ -13,10 +13,10 @@ from spatial_autoencoder_model import make_autoencoder
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
 project = "pepperBig_trial2/"#"dev_env"
-save_every_t = 100
+save_every_t = 10
 display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.000005
+lr = 0.00005
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
