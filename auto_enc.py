@@ -8,7 +8,7 @@ import cv2
 import keras
 
 from lsuv_init import LSUVinit
-from spatial_autoencoder_model2 import make_autoencoder
+from spatial_autoencoder_model import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
