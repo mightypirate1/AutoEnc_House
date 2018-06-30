@@ -15,6 +15,7 @@ work_dir = "knut/"
 project = "pepperBig_spatialTest/"#"dev_env"
 save_every_t = 100
 display_result = not False
+visualize_convs = True
 weight_file = "weights" #for outputing weights of the net in a file....
 lr = 0.0000005
 n = 1000 #numbre of data vectors per file
@@ -177,11 +178,13 @@ if testing:
                     if n%h != 0:
                         snoop_destack_tuple += (np.zeros( (size[0], size[1],3) ) )*(h-n%h)
                         n+=h-n%h
-                    img = np.concatenate(snoop_destack_tuple[0:n/h],axis=1)
-                    idx = n/h
-                    for i in range(1,h)
-                        img = np.concatenate( np.concatenate(snoop_destack_tuple[idx:idx+n/4],axis=1) , axis=0 )
-                    # snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
-                    # img = np.concatenate((org,clone,snoop_img),axis=1)
+                    img = np.concatenate(snoop_destack_tuple[0:int(n/h)],axis=1)
+                    idx = int(n/h)
+                    for i in range(1,h):
+                        x = np.concatenate( snoop_destack_tuple[idx:idx+int(n/4)],axis=1)
+                        print(x.shape)
+                        img = np.concatenate(  (img,x) , axis=0 )
+                    if not visualize_convs:
+                        img = np.concatenate( (org,clone), axis=1 )
                     plt.imshow(img)
                     plt.show()
