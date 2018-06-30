@@ -13,13 +13,14 @@ from spatial_autoencoder_model2 import make_autoencoder
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
 project = "pepperBig_spatialTest/"#"dev_env"
-save_every_t = 1000
+save_every_t = 100
 display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.00005
+lr = 0.00001
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
+disable_avg = True
 lsuv_init = not True
 first_batch = True
 
@@ -57,7 +58,7 @@ def load_file(file, make_gray=False, resize=None):
     data = data.astype(np.float32)/255.0
     n = data.shape[0]
     avg = np.mean(data,axis=0)[np.newaxis,:]
-    if batch_normalization:
+    if batch_normalization or disable_avg:
         avg *= 0.0
     avg_block = np.concatenate((avg,)*n,axis=0)
     return data, n, avg, avg_block
