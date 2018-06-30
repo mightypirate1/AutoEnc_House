@@ -8,15 +8,15 @@ import cv2
 import keras
 
 from lsuv_init import LSUVinit
-from spatial_autoencoder_model import make_autoencoder
+from spatial_autoencoder_model2 import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
 project = "pepperBig_trial2/"#"dev_env"
-save_every_t = 10
+save_every_t = 1000
 display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.0005
+lr = 0.00005
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
