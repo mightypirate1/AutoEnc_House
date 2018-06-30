@@ -12,7 +12,7 @@ from spatial_autoencoder_model2 import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
-project = "pepperBig_trial2/"#"dev_env"
+project = "pepperBig_spatialTest/"#"dev_env"
 save_every_t = 1000
 display_result = not False
 weight_file = "weights" #for outputing weights of the net in a file....
