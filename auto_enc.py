@@ -20,7 +20,7 @@ lr = 0.0000005
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
-disable_avg = True
+disable_avg = False
 lsuv_init = not True
 first_batch = True
 
