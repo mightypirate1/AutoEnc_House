@@ -10,7 +10,7 @@ USE_POOLING = True
 
 def spatial_soft_argmax(z,size, alpha=1.0, beta=0.0):
     pos_x, pos_y = space_blocks(size)
-    x = Lambda( lambda x : x-K.max(x,axis=(1,2)))(z) #For numerical stability
+    x = Lambda( lambda x : x-K.max(x,axis=(1,2), keepdims=True ))(z) #For numerical stability
     exp_z = Lambda( lambda a : K.exp(alpha*(a+beta)) )(x)
     softmax = Lambda( lambda a : a / K.sum(K.sum(a,axis=1,keepdims=True),axis=2,keepdims=True) )(exp_z)
     x = Lambda(lambda a : K.sum(K.sum(a*pos_x,axis=1,keepdims=True),axis=2,keepdims=False))(softmax)
