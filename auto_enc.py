@@ -167,8 +167,21 @@ if testing:
                 if display_result:
                     for j in range(positions.shape[1]):
                         print("Feature {} pos: ({},{})".format(j,positions[0,j], positions[1,j]))
-                    snoop_destack_tuple = tuple([ (0.2**(i%2))+(-1)**(i%2)*snoop_layers[:,:,3*i:3*(i+1)] for i in range(5)])
-                    snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
-                    img = np.concatenate((org,clone,snoop_img),axis=1)
+                    snoop_destack_tuple = (org,clone)
+                    if snoop_layers.shape[-1]%3 != 0:
+                        snoop_layers = np.concatenate((snoop_layers, np.zeros( (size[0], size[1],3-snoop_layers.shape[-1]%3)) ), axis=-1)
+                    limit = int(snoop_layers.shape[-1]/3)
+                    snoop_destack_tuple += tuple([ (0.2**(i%2))+(-1)**(i%2)*snoop_layers[:,:,3*i:3*(i+1)] for i in range(limit)])
+                    n = len(snoop_destack_tuple)
+                    h = max(4,int(np.sqrt(n)))
+                    if n%h != 0:
+                        snoop_destack_tuple += (np.zeros( (size[0], size[1],3) ) )*(h-n%h)
+                        n+=h-n%h
+                    img = np.concatenate(snoop_destack_tuple[0:n/h],axis=1)
+                    idx = n/h
+                    for i in range(1,h)
+                        img = np.concatenate( np.concatenate(snoop_destack_tuple[idx:idx+n/4],axis=1) , axis=0 )
+                    # snoop_img = np.concatenate(snoop_destack_tuple, axis=1)
+                    # img = np.concatenate((org,clone,snoop_img),axis=1)
                     plt.imshow(img)
                     plt.show()
