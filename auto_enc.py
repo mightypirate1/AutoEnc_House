@@ -183,7 +183,7 @@ if testing:
                     img = np.concatenate(snoop_destack_tuple[0:int(n/h)],axis=1)
                     idx = int(n/h)
                     for i in range(1,h):
-                        x = np.concatenate( snoop_destack_tuple[idx:min(idx+int(n/4),len(snoop_destack_tuple))],axis=1)
+                        x = np.concatenate( snoop_destack_tuple[idx:min(idx+int(n/h),len(snoop_destack_tuple))],axis=1)
                         img = np.concatenate(  (img,x) , axis=0 )
                         idx += int(n/4)
                     if not visualize_convs:
