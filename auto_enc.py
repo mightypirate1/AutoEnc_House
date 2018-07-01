@@ -90,7 +90,9 @@ size = (96,96,3)
 
 model, snoop, position = make_autoencoder(size=size,lr=lr,bn=batch_normalization)
 
-if training :
+if training:
+    tb = keras.callbacks.TensorBoard(log_dir='./tensorboard/'+project, histogram_freq=0,
+              write_graph=True, write_images=True)
     T=-1
     for t in range(n_epochs):
         for infile in os.listdir(work_dir+project+"/data"):
@@ -101,7 +103,7 @@ if training :
                 first_batch = False
                 model = LSUVinit(model, data[:100,:,:,:])
 
-            history = model.fit(data-avg_block,data-avg_block, batch_size=32)
+            history = model.fit(data-avg_block,data-avg_block, batch_size=32, callbacks=[tb])
             print("t={} -> {} samples seen...".format(T,(T+1)*1000))
             if T%save_every_t == 0:
                 print("Saving net...",end='',flush=True)
@@ -174,7 +176,7 @@ if testing:
                     limit = int(snoop_layers.shape[-1]/3)
                     snoop_destack_tuple += tuple([ (0.2**(i%2))+(-1)**(i%2)*snoop_layers[:,:,3*i:3*(i+1)] for i in range(limit)])
                     n = len(snoop_destack_tuple)
-                    h = max(4,int(np.sqrt(n)))
+                    h = min(4,int(np.sqrt(n)))
                     if n%h != 0:
                         snoop_destack_tuple += (np.zeros( (size[0], size[1],3) ) )*(h-n%h)
                         n+=h-n%h
