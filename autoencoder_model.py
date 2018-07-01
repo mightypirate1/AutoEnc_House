@@ -150,4 +150,4 @@ def make_autoencoder(size,lr=0.02,bn=False):
     peephole_model.compile(optimizer=optimizer, loss=loss_fcn)
     model.compile(optimizer=optimizer, loss=loss_fcn)
     model.summary()
-    return model, peephole_model
+    return model, peephole_model, peephole_model
