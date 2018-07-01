@@ -53,8 +53,8 @@ def custom_loss(y_true, y_pred):
     return a*max_abs_error(y_true, y_pred) + b*keras.losses.mean_absolute_error(y_true, y_pred)
 
 def make_autoencoder(size,lr=0.02,bn=False):
-
     allow_bias = True
+
 
     initializer = keras.initializers.glorot_uniform()
     keras.layers.ELU(alpha=1.0)
@@ -130,7 +130,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
     ''' ------------------------------------- '''
 
     x = position_decoder(encoded,(size[0],size[1],conv_depth_3))
-    x = Dropout(0.2)(x)
+    x = Dropout(0.1)(x)
     x = Convolution2D(conv_depth_3,
                       size_3,
                       use_bias=allow_bias,
@@ -143,6 +143,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
+    x = Dropout(0.2)(x)
 
     x = Convolution2D(3,
                       size_3,
@@ -156,7 +157,6 @@ def make_autoencoder(size,lr=0.02,bn=False):
     x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
-
 
     output = x
 

@@ -18,12 +18,8 @@ def custom_loss(y_true, y_pred):
 
 def make_autoencoder(size,lr=0.02,bn=False):
     initializer = keras.initializers.glorot_uniform()
-    default_activation = keras.layers.ELU(alpha=1.0)
-    spatial_softmax = Activation(spatial_softmax_blueprint)
-    # default_activation = keras.layers.Activation('softsign')
-
-    loss_fcn = custom_loss
-    # loss_fcn = keras.losses.mean_squared_error#keras.losses.mean_absolute_error
+    # loss_fcn = custom_loss
+    loss_fcn = keras.losses.mean_squared_error#keras.losses.mean_absolute_error
 
     optimizer = Adam(lr=lr)
     # optimizer = SGD(lr=lr)
@@ -40,7 +36,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
     stride_2 = 1
     stride_3 = 1
 
-    bottleneck_size = 512
+    bottleneck_size = 128
     bottleneck_activity_regularizer = keras.regularizers.l1(0.0)
 
     (fy,fx) = (2,2) if USE_POOLING else (1,1)
@@ -53,7 +49,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                       strides=(stride_1,stride_1),
                       padding='same',
                       kernel_initializer=initializer) (input)
-    x = default_activation(x)
+    x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
@@ -65,7 +61,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                       strides=(stride_2,stride_2),
                       padding='same',
                       kernel_initializer=initializer)(x)
-    x = default_activation(x)
+    x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
@@ -77,7 +73,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                       strides=(stride_3,stride_3),
                       padding='same',
                       kernel_initializer=initializer)(x)
-    x = default_activation(x)
+    x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     snoop = x
@@ -91,12 +87,15 @@ def make_autoencoder(size,lr=0.02,bn=False):
                     use_bias=False,
                     activity_regularizer=bottleneck_activity_regularizer,
                     kernel_initializer=initializer)(x)
-
+    x = keras.layers.ELU(alpha=1.0)(x)
+    if bn:
+        x = BatchNormalization(axis=-1)(x)
+    x = Dropout(0.2)(x)
     x = Dense(int(size[0]/stride_3)*int(size[1]/stride_3)*3,
                   use_bias=False,
                   name='dense_1',
                   kernel_initializer=initializer)(encoded)
-    x = default_activation(x)
+    x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
@@ -110,7 +109,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                       strides=(stride_3,stride_3),
                       padding='same',
                       kernel_initializer=initializer)(x)
-    x = default_activation(x)
+    x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
@@ -122,7 +121,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                       name='deconv_2',
                       padding='same',
                       kernel_initializer=initializer)(x)
-    x = default_activation(x)
+    x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)
@@ -134,7 +133,7 @@ def make_autoencoder(size,lr=0.02,bn=False):
                       name='deconv_3',
                       padding='same',
                       kernel_initializer=initializer)(x)
-    x = default_activation(x)
+    x = keras.layers.ELU(alpha=1.0)(x)
     if bn:
         x = BatchNormalization(axis=-1)(x)
     x = Dropout(0.2)(x)

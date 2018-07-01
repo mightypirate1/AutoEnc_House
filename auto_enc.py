@@ -8,16 +8,16 @@ import cv2
 import keras
 
 from lsuv_init import LSUVinit
-from spatial_autoencoder_model2 import make_autoencoder
+from autoencoder_model import make_autoencoder
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
-project = "pepperBig_spatialTest/"#"dev_env"
+project = "pepperBig_trial2/"#"dev_env"
 save_every_t = 100
 display_result = not False
 visualize_convs = True
 weight_file = "weights" #for outputing weights of the net in a file....
-lr = 0.0000005
+lr = 0.000005
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
@@ -182,7 +182,6 @@ if testing:
                     idx = int(n/h)
                     for i in range(1,h):
                         x = np.concatenate( snoop_destack_tuple[idx:idx+int(n/4)],axis=1)
-                        print(x.shape)
                         img = np.concatenate(  (img,x) , axis=0 )
                     if not visualize_convs:
                         img = np.concatenate( (org,clone), axis=1 )
