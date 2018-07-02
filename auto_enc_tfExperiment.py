@@ -31,7 +31,7 @@ display_result = not False
 visualize_convs = True
 weight_file = "weights_tf" #for outputing weights of the net in a file....
 lr = 0.00005
-minibatch_size = 1#32
+minibatch_size = 32
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
@@ -114,7 +114,6 @@ with tf.Session() as session:
                     data, n, avg, avg_block = load_file(file)
                 idx=0
                 tot_loss = 0
-                n = 10
                 merge = tf.summary.merge_all()
                 print("[",end='',flush=True)
                 while idx<n-1:
