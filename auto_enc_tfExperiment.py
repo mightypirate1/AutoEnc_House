@@ -110,8 +110,8 @@ with tf.Session() as session:
     else:
         loss_weights = 1.0
     error_loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights)
-    k = 1.0
-    variance_loss_tf = -k*tf.reduce_mean(tf.clip_by_value(encoder_variance_tf ,0,0.1),axis=1)
+    k = 0.1
+    variance_loss_tf = -k*tf.reduce_mean(tf.clip_by_value(encoder_variance_tf ,0,0.01))
     loss_tf = error_loss_tf + variance_loss_tf
 
     ''' Training/Saver/Init ops '''
