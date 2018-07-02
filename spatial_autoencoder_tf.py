@@ -23,7 +23,7 @@ def spatial_soft_argmax(z,size, alpha=1.0):
     map_y = pos_y * softmax
     x = tf.reduce_sum( tf.reduce_sum(map_x, axis=1, keep_dims=True), axis=2, keep_dims=False )
     y = tf.reduce_sum( tf.reduce_sum(map_y, axis=1, keep_dims=True), axis=2, keep_dims=False )
-    return tf.concat([x,y,var], axis=1)
+    return tf.concat([x,y,var], axis=1), alpha_tf
 
 def position_decoder(z,size):
     ''' Takes a tensor z of shape (samples, 2 , c) where
@@ -119,7 +119,7 @@ def make_autoencoder(input_tensor, size,lr=0.02,bn=False, sess=None):
 
     ''' He we smuggle out some information... '''
     snoop = x
-    encoded = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3))
+    encoded, alpha_tf = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3))
     positions = encoded
     ''' Decoder starts here... '''
     x = position_decoder(encoded,(size[0],size[1],conv_depth_3))
@@ -169,4 +169,4 @@ def make_autoencoder(input_tensor, size,lr=0.02,bn=False, sess=None):
 
     output = x
 
-    return output, snoop, positions, training
+    return output, snoop, positions, alpha_tf, training
