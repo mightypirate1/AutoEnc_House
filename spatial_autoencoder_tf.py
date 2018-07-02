@@ -14,7 +14,8 @@ def spatial_soft_argmax(z,size, alpha=1.0):
     mean, var = tf.nn.moments( z, (1,2), shift=None, name=None, keep_dims=True)
     var = var[:,0,:,:]
     tmp = z-mean
-    exp_z = tf.exp(alpha*z)
+    alpha_tf = tf.get_variable('alpha_tensor', trainable=True, shape=(1,1,z.shape[3]), initializer=tf.constant_initializer(alpha*np.ones((1,1,z.shape[3]))) )
+    exp_z = tf.exp(alpha_tf*z)
     weights = tf.reduce_sum(exp_z, axis=1, keep_dims=True)
     weights = tf.reduce_sum(weights, axis=2, keep_dims=True)
     softmax = tf.truediv(exp_z, weights)
