@@ -58,7 +58,7 @@ def custom_loss(y_true, y_pred):
     b = 1.0
     return a*max_abs_error(y_true, y_pred) + b*keras.losses.mean_absolute_error(y_true, y_pred)
 
-def make_autoencoder(input_tensor, size,lr=0.02,bn=False, sess=None):
+def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None):
     allow_bias = True
     if sess is not None:
         keras.backend.set_session(sess)
@@ -119,7 +119,7 @@ def make_autoencoder(input_tensor, size,lr=0.02,bn=False, sess=None):
 
     ''' He we smuggle out some information... '''
     snoop = x
-    encoded, alpha_tf = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3))
+    encoded, alpha_tf = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3), alpha=alpha)
     positions = encoded
     ''' Decoder starts here... '''
     x = position_decoder(encoded,(size[0],size[1],conv_depth_3))

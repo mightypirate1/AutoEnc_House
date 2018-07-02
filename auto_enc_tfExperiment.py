@@ -32,6 +32,7 @@ weight_file = "weights_tf" #for outputing weights of the net in a file....
 
 
 lr = 0.00005
+initial_alpha = 10.0
 minibatch_size = 32
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
@@ -96,7 +97,7 @@ with tf.Session() as session:
     avg_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
 
     autoencoder_input_tf = input_tf-avg_tf
-    decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf,size=size,lr=lr,bn=batch_normalization, sess=session)
+    decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf, alpha=initial_alpha, size=size,lr=lr,bn=batch_normalization, sess=session)
     output_tf = decoded_tf + avg_tf
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf)
