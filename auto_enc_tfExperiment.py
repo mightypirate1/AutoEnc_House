@@ -232,7 +232,7 @@ with tf.Session() as session:
                         ''' Visualize the features detected! '''
                         for x,y,r in zip(positions[0,:],positions[1,:],positions[2,:]):
 
-                            radius = 10000*r
+                            radius = min(1, 1/(r*10000))
                             transparency = min(1, 1/(r*1000))
 
                             c = Circle((size[0]*x,size[1]*y), radius=radius, fill=False )
