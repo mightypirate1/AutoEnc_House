@@ -11,18 +11,18 @@ USE_POOLING = True
 
 def spatial_soft_argmax(z,size, alpha=1.0):
     pos_x, pos_y = space_blocks(size)
-    max_z = tf.reduce_max(z , axis=1, keep_dims=True)
-    max_z = tf.reduce_max(max_z , axis=2, keep_dims=True)
-    tmp = z-max_z
+    mean, var = tf.nn.moments( z, (1,2), shift=None, name=None, keep_dims=True)
+    var = var[:,0,:,:]
+    tmp = z-mean
     exp_z = tf.exp(alpha*z)
-    weights = tf.reduce_max(exp_z, axis=1, keep_dims=True)
-    weights = tf.reduce_max(weights, axis=2, keep_dims=True)
+    weights = tf.reduce_sum(exp_z, axis=1, keep_dims=True)
+    weights = tf.reduce_sum(weights, axis=2, keep_dims=True)
     softmax = tf.truediv(exp_z, weights)
     map_x = pos_x * softmax
     map_y = pos_y * softmax
     x = tf.reduce_sum( tf.reduce_sum(map_x, axis=1, keep_dims=True), axis=2, keep_dims=False )
     y = tf.reduce_sum( tf.reduce_sum(map_y, axis=1, keep_dims=True), axis=2, keep_dims=False )
-    return tf.concat([x,y], axis=1)
+    return tf.concat([x,y,var], axis=1)
 
 def position_decoder(z,size):
     ''' Takes a tensor z of shape (samples, 2 , c) where
@@ -34,13 +34,15 @@ def position_decoder(z,size):
     pos_x, pos_y = space_blocks(size)
     x = tf.reshape(z[:,0,:], (-1,1,1,size[2]))
     y = tf.reshape(z[:,1,:], (-1,1,1,size[2]))
+    spread = tf.reshape(z[:,2,:], (-1,1,1,size[2]))
     x_coords = tf.multiply(x, tf.ones(size))
     y_coords = tf.multiply(y, tf.ones(size))
     pos_x, pos_y = space_blocks(size)
     delta_x_squared = tf.square(pos_x-x_coords)
     delta_y_squared = tf.square(pos_y-y_coords)
-    dist_map = tf.sqrt(delta_x_squared+delta_y_squared)
-    return dist_map
+    distance = tf.sqrt(delta_x_squared+delta_y_squared)
+    feature_map = spread-spread*distance
+    return feature_map
 
 def space_blocks(size):
     a = np.tile( (np.arange(size[0], dtype=np.float32)/size[0]).reshape((size[0],1,1)), (1,size[1],size[2]) )

@@ -125,7 +125,7 @@ with tf.Session() as session:
                     tot_loss += minibatch_size * loss
                     idx += minibatch_size
                     print("-",end='',flush=True)
-                print("]",flush=True)
+                print("] :: ",end='',flush=True)
                 # train_writer.add_summary(summary, T)
                 total_samples += n
                 print("t={} -> n={} | loss={}".format(T,total_samples,tot_loss/n) )
