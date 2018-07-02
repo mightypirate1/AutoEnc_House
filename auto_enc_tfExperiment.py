@@ -94,7 +94,9 @@ with tf.Session() as session:
     # keras.backend.set_session(session)
     input_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
     avg_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
-    decoded_tf, snoop_tf, position_tf, train_mode_tf = make_autoencoder(input_tf-avg_tf,size=size,lr=lr,bn=batch_normalization, sess=session)
+
+    autoencoder_input_tf = input_tf-avg_tf
+    decoded_tf, snoop_tf, position_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf,size=size,lr=lr,bn=batch_normalization, sess=session)
     output_tf = decoded_tf + avg_tf
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf)
@@ -181,13 +183,13 @@ with tf.Session() as session:
                     data, n, avg, _ = load_file(file)
                 for i in range(n):
                     feed_dict={
-                                input_tf : data[i,:,:,:],
-                                avg_tf : avg,
+                                input_tf : data[i,:,:,:][np.newaxis,:],
+                                avg_tf : avg[np.newaxis,:],
                                 train_mode_tf : False,
                                }
                     output,snoop, positions, loss = session.run([output_tf, snoop_tf, position_tf, loss_tf], feed_dict=feed_dict)
                     org = data[i,:,:,:]
-                    clone = (output+avg)[0]
+                    clone = output[0]
                     snoop_layers = snoop[0]
                     positions = positions[0]
                     e = loss #np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
