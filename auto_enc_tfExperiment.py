@@ -92,21 +92,29 @@ size = (96,96,3)
 # avg_block = np.concatenate((avg,)*1000,axis=0)
 
 with tf.Session() as session:
-    # keras.backend.set_session(session)
+    ''' Inputs '''
     input_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
     avg_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
 
+    ''' Dataflow '''
     autoencoder_input_tf = input_tf-avg_tf
     decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf, alpha=initial_alpha, size=size,lr=lr,bn=batch_normalization, sess=session)
+    _, encoder_variance_tf = tf.nn.moments(snoop_tf, (1,2))
     output_tf = decoded_tf + avg_tf
+
+    ''' Loss '''
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf)
         mean_w, _ = tf.nn.moments( w, (1,2,3), shift=None, keep_dims=True)
         loss_weights = 0.5*( 1+w/(mean_w+10**-6) )
     else:
         loss_weights = 1.0
-    loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights)
+    error_loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights)
+    k = 1.0
+    variance_loss_tf = -k*tf.reduce_mean(tf.clip_by_value(encoder_variance_tf ,0,0.1),axis=1)
+    loss_tf = error_loss_tf + variance_loss_tf
 
+    ''' Training/Saver/Init ops '''
     training_ops = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss_tf)
     saver = tf.train.Saver()
     # train_writer = tf.summary.FileWriter( './logs/1/train ', session.graph)
