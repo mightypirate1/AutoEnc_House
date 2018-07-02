@@ -96,7 +96,7 @@ with tf.Session() as session:
     avg_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
 
     autoencoder_input_tf = input_tf-avg_tf
-    decoded_tf, snoop_tf, position_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf,size=size,lr=lr,bn=batch_normalization, sess=session)
+    decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf,size=size,lr=lr,bn=batch_normalization, sess=session)
     output_tf = decoded_tf + avg_tf
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf)
@@ -187,13 +187,14 @@ with tf.Session() as session:
                                 avg_tf : avg,
                                 train_mode_tf : False,
                                }
-                    output,snoop, positions, loss = session.run([output_tf, snoop_tf, position_tf, loss_tf], feed_dict=feed_dict)
+                    output,snoop, positions, alpha_vec, loss = session.run([output_tf, snoop_tf, position_tf, alpha_tf, loss_tf], feed_dict=feed_dict)
                     org = data[i,:,:,:]
                     clone = output[0]
                     snoop_layers = snoop[0]
                     positions = positions[0]
                     e = loss #np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
                     print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
+                    print("Alpha={}".format(alpha_vec.reshape(-1)))
                     if display_result:
                         for j in range(positions.shape[1]):
                             print("Feature {} pos: ({},{})".format(j,positions[0,j], positions[1,j]))
