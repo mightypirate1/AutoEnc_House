@@ -20,7 +20,6 @@ Write the damn report and send emails. Don't be too apologetic :)
 '''
 
 
-from lsuv_init import LSUVinit
 from spatial_autoencoder_tf import make_autoencoder
 
 MAKE_GRAYSCALE = False
@@ -30,14 +29,15 @@ save_every_t = 100
 display_result = not False
 visualize_convs = True
 weight_file = "weights_tf" #for outputing weights of the net in a file....
+
+
 lr = 0.00005
 minibatch_size = 32
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
-disable_avg = False
-lsuv_init = not True
-first_batch = True
+disable_avg = not True
+weighted_loss = True
 
 def load_file(file, make_gray=False, resize=None):
     with open(file.name,'rb') as f:
@@ -93,11 +93,20 @@ size = (96,96,3)
 with tf.Session() as session:
     # keras.backend.set_session(session)
     input_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
-    output_tf, snoop_tf, position_tf, train_mode_tf = make_autoencoder(input_tf,size=size,lr=lr,bn=batch_normalization, sess=session)
-    loss_tf = tf.losses.mean_squared_error(output_tf, input_tf)
+    avg_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
+    decoded_tf, snoop_tf, position_tf, train_mode_tf = make_autoencoder(input_tf-avg_tf,size=size,lr=lr,bn=batch_normalization, sess=session)
+    output_tf = decoded_tf + avg_tf
+    if weighted_loss:
+        w = tf.abs(avg_tf-input_tf)
+        mean_w, _ = tf.nn.moments( w, (1,2,3), shift=None, keep_dims=True)
+        loss_weights = 0.5*( 1+w/(mean_w+10**-6) )
+    else:
+        loss_weights = 1.0
+    loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights)
+
     training_ops = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss_tf)
     saver = tf.train.Saver()
-    train_writer = tf.summary.FileWriter( './logs/1/train ', session.graph)
+    # train_writer = tf.summary.FileWriter( './logs/1/train ', session.graph)
     init_ops = tf.global_variables_initializer()
 
     if training:
@@ -118,10 +127,11 @@ with tf.Session() as session:
                 print("[",end='',flush=True)
                 while idx<n-1:
                     feed_dict={
-                                input_tf : (data-avg_block)[idx:min(n,idx+minibatch_size),:,:,:],
+                                input_tf : data[idx:min(n,idx+minibatch_size),:,:,:],
+                                avg_tf : avg_block[idx:min(n,idx+minibatch_size),:,:,:],
                                 train_mode_tf : True,
                                }
-                    _,snoop,loss = session.run([training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
+                    ape, _,snoop,loss = session.run([loss_weights, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
                     tot_loss += minibatch_size * loss
                     idx += minibatch_size
                     print("-",end='',flush=True)
