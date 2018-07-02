@@ -97,7 +97,7 @@ with tf.Session() as session:
     avg_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
 
     ''' Dataflow '''
-    autoencoder_input_tf = input_tf is disable_avg else input_tf-avg_tf
+    autoencoder_input_tf = input_tf if disable_avg else input_tf-avg_tf
     decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf, alpha=initial_alpha, size=size,lr=lr,bn=batch_normalization, sess=session)
     _, encoder_variance_tf = tf.nn.moments(snoop_tf, (1,2))
     output_tf = decoded_tf if disable_avg else decoded_tf + avg_tf
