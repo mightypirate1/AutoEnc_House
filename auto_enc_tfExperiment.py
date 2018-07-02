@@ -225,7 +225,8 @@ with tf.Session() as session:
                         for x,y,r in zip(positions[0,:],positions[1,:],positions[2,:]):
 
                             radius = 10000*r
-                            transparency = 100*r
+                            transparency = np.clip(100*r,0,1)
+
                             c = Circle((size[0]*x,size[1]*y), radius=radius, fill=False )
                             c.set_alpha(transparency)
                             c.set_antialiased(True)
