@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import cv2
 import keras
 import tensorflow as tf
-
+from matplotlib.patches import Circle
 '''
 Good morning!
 
@@ -134,7 +134,7 @@ with tf.Session() as session:
                                 avg_tf : avg_block[idx:min(n,idx+minibatch_size),:,:,:],
                                 train_mode_tf : True,
                                }
-                    ape, _,snoop,loss = session.run([loss_weights, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
+                    ape, _, snoop,loss = session.run([loss_weights, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
                     tot_loss += minibatch_size * loss
                     idx += minibatch_size
                     print("-",end='',flush=True)
@@ -198,7 +198,7 @@ with tf.Session() as session:
                     print("Alpha={}".format(alpha_vec.reshape(-1)))
                     if display_result:
                         for j in range(positions.shape[1]):
-                            print("Feature {} pos: ({},{})".format(j,positions[0,j], positions[1,j]))
+                            print("Feature {} pos: ({},{}) spread: {}".format(j,positions[0,j], positions[1,j], positions[2,j]))
                         snoop_destack_tuple = (org,clone)
                         if snoop_layers.shape[-1]%3 != 0:
                             snoop_layers = np.concatenate((snoop_layers, np.zeros( (size[0], size[1],3-snoop_layers.shape[-1]%3)) ), axis=-1)
@@ -217,5 +217,18 @@ with tf.Session() as session:
                             idx += int(n/4)
                         if not visualize_convs:
                             img = np.concatenate( (org,clone), axis=1 )
-                        plt.imshow(img)
+
+                        fig,ax = plt.subplots(1)
+                        ax.set_aspect('equal')
+                        ax.imshow(img)
+                        ''' Visualize the features detected! '''
+                        for x,y,r in zip(positions[0,:],positions[1,:],positions[2,:]):
+
+                            radius = 10000*r
+                            transparency = 100*r
+                            c = Circle((size[0]*x,size[1]*y), radius=radius, fill=False )
+                            c.set_alpha(transparency)
+                            c.set_antialiased(True)
+                            c.set_ec(np.random.rand(3))
+                            ax.add_patch(c)
                         plt.show()
