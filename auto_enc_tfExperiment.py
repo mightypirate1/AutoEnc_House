@@ -62,7 +62,7 @@ def load_file(file, make_gray=False, resize=None):
     data = data.astype(np.float32)/255.0
     n = data.shape[0]
     avg = np.mean(data,axis=0)[np.newaxis,:]
-    if batch_normalization or disable_avg:
+    if batch_normalization:
         avg *= 0.0
     avg_block = np.concatenate((avg,)*n,axis=0)
     return data, n, avg, avg_block
@@ -97,10 +97,10 @@ with tf.Session() as session:
     avg_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
 
     ''' Dataflow '''
-    autoencoder_input_tf = input_tf-avg_tf
+    autoencoder_input_tf = input_tf is disable_avg else input_tf-avg_tf
     decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf, alpha=initial_alpha, size=size,lr=lr,bn=batch_normalization, sess=session)
     _, encoder_variance_tf = tf.nn.moments(snoop_tf, (1,2))
-    output_tf = decoded_tf + avg_tf
+    output_tf = decoded_tf if disable_avg else decoded_tf + avg_tf
 
     ''' Loss '''
     if weighted_loss:
