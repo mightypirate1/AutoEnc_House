@@ -184,7 +184,7 @@ with tf.Session() as session:
                 for i in range(n):
                     feed_dict={
                                 input_tf : data[i,:,:,:][np.newaxis,:],
-                                avg_tf : avg[np.newaxis,:],
+                                avg_tf : avg,
                                 train_mode_tf : False,
                                }
                     output,snoop, positions, loss = session.run([output_tf, snoop_tf, position_tf, loss_tf], feed_dict=feed_dict)
