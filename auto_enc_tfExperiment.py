@@ -25,7 +25,7 @@ from spatial_autoencoder_tf import make_autoencoder
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
 project = "pepperBig_spatialTest/"#"dev_env"
-save_every_t = 100
+save_every_t = 10
 display_result = not False
 visualize_convs = True
 weight_file = "weights_tf" #for outputing weights of the net in a file....
@@ -181,7 +181,8 @@ with tf.Session() as session:
                     data, n, avg, _ = load_file(file)
                 for i in range(n):
                     feed_dict={
-                                input_tf : (data-avg)[i,:,:,:][np.newaxis,:,:,:],
+                                input_tf : data[i,:,:,:],
+                                avg_tf : avg,
                                 train_mode_tf : False,
                                }
                     output,snoop, positions, loss = session.run([output_tf, snoop_tf, position_tf, loss_tf], feed_dict=feed_dict)
