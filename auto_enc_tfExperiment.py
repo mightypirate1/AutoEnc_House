@@ -37,7 +37,7 @@ minibatch_size = 32
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
-disable_avg = not True
+disable_avg = True
 weighted_loss = True
 
 def load_file(file, make_gray=False, resize=None):
@@ -112,7 +112,7 @@ with tf.Session() as session:
     error_loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights)
     k = 0.1
     variance_loss_tf = -k*tf.reduce_mean(tf.clip_by_value(encoder_variance_tf ,0,0.01))
-    loss_tf = error_loss_tf + variance_loss_tf
+    loss_tf = error_loss_tf #+ variance_loss_tf
 
     ''' Training/Saver/Init ops '''
     training_ops = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss_tf)
@@ -156,8 +156,6 @@ with tf.Session() as session:
                     print("Saving net ({})...".format(path),end='',flush=True)
                     save_path = saver.save(session, path)
                     print("[x]")
-
-    print("ADD CODE FOR WEIGHT-EXPORT")
 
     if testing:
         idx = 0
