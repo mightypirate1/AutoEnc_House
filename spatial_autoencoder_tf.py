@@ -58,7 +58,7 @@ def custom_loss(y_true, y_pred):
     b = 1.0
     return a*max_abs_error(y_true, y_pred) + b*keras.losses.mean_absolute_error(y_true, y_pred)
 
-def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None):
+def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None, use_dense_decoder=False):
     allow_bias = True
     if sess is not None:
         keras.backend.set_session(sess)
@@ -122,6 +122,15 @@ def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None)
     encoded, alpha_tf = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3), alpha=alpha)
     positions = encoded
     ''' Decoder starts here... '''
+
+    if use_dense_decoder:
+        scale=2
+        x = tf.layers.dense(encoded, 256, activation=tf.nn.elu, kernel_initializer=initializer, bias_initializer=initializer)
+        x = tf.layers.dense(encoded, size[0]*size[1]*size[2]/(scale**2), activation=tf.nn.sigmoid, kernel_initializer=initializer, bias_initializer=initializer)
+        x = tf.reshape(x, (-1, size[0]//2, size[1]//2,size[2]))
+        output = tf.image.resize_nearest_neighbor(x, (size[0],size[1]))
+        return output, snoop, positions, alpha_tf, training
+
     x = position_decoder(encoded,(size[0],size[1],conv_depth_3))
     ''' ------------------------------------- '''
 

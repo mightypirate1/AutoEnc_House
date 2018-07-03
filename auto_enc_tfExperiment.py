@@ -32,8 +32,8 @@ weight_file = "weights_tf" #for outputing weights of the net in a file....
 
 
 lr = 0.00005
-initial_alpha = 10.0
-minibatch_size = 32
+initial_alpha = 5.0
+minibatch_size = 64
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
@@ -98,7 +98,15 @@ with tf.Session() as session:
 
     ''' Dataflow '''
     autoencoder_input_tf = input_tf if disable_avg else input_tf-avg_tf
-    decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = make_autoencoder(autoencoder_input_tf, alpha=initial_alpha, size=size,lr=lr,bn=batch_normalization, sess=session)
+    return_tensors = make_autoencoder(
+                                        autoencoder_input_tf,
+                                        alpha=initial_alpha,
+                                        size=size,lr=lr,
+                                        bn=batch_normalization,
+                                        sess=session,
+                                        use_dense_decoder=False
+                                      )
+    decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = return_tensors
     _, encoder_variance_tf = tf.nn.moments(snoop_tf, (1,2))
     output_tf = decoded_tf if disable_avg else decoded_tf + avg_tf
 
@@ -157,6 +165,7 @@ with tf.Session() as session:
                     save_path = saver.save(session, path)
                     print("[x]")
 
+    ''' Save weights to a file '''
     if testing:
         idx = 0
         print("Layers loaded:")
