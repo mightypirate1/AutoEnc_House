@@ -206,14 +206,13 @@ with tf.Session() as session:
                                 avg_tf : avg,
                                 train_mode_tf : False,
                                }
-                    output,snoop, positions, alpha_vec, loss = session.run([output_tf, snoop_tf, position_tf, alpha_tf, loss_tf], feed_dict=feed_dict)
+                    output,snoop, positions, loss = session.run([output_tf, snoop_tf, position_tf, loss_tf], feed_dict=feed_dict)
                     org = data[i,:,:,:]
                     clone = output[0]
                     snoop_layers = snoop[0]
                     positions = positions[0]
                     e = loss #np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
                     print("Mean error: {}    Max error: {}".format(e.mean(),e.max()))
-                    print("Alpha={}".format(alpha_vec.reshape(-1)))
                     if display_result:
                         for j in range(positions.shape[1]):
                             print("Feature {} pos: ({},{}) spread: {}".format(j,positions[0,j], positions[1,j], positions[2,j]))
