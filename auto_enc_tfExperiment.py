@@ -180,9 +180,9 @@ with tf.Session() as session:
             layer_names = [x.name.split("/")[0] for x in tensor_names]
             weight_dict={}
             for i,x in enumerate(layer_names):
-                weight_dict[x] = []
+                weight_dict[x] = { 'layer' : x, 'weights' : [] }
             for i,x in enumerate(layer_names):
-                weight_dict[x].append( weights[i] )
+                weight_dict[x]['weights'].append( weights[i] )
             for x in weight_dict:
                 print(x, weight_dict[x])
             file_output = list(weight_dict.values())
