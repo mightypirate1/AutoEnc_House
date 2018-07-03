@@ -11,8 +11,8 @@ USE_POOLING = True
 
 def spatial_soft_argmax(z,size, alpha=1.0):
     softmax = spatial_softmax.spatial_softmax(z)
-    x = tf.reshape(softmax[:,::2], (-1,1,1,size[2]))
-    y = tf.reshape(softmax[:,1::2], (-1,1,1,size[2]))
+    x = tf.reshape(softmax[:,::2], (-1,1,size[2]))
+    y = tf.reshape(softmax[:,1::2], (-1,1,size[2]))
     alpha_tf = None
     # pos_x, pos_y = space_blocks(size)
     _, var = tf.nn.moments( z, (1,2), shift=None, name=None, keep_dims=True)
