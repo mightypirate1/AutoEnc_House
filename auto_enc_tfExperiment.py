@@ -104,7 +104,7 @@ with tf.Session() as session:
                                         size=size,lr=lr,
                                         bn=batch_normalization,
                                         sess=session,
-                                        use_dense_decoder=False
+                                        use_dense_decoder=True
                                       )
     decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = return_tensors
     _, encoder_variance_tf = tf.nn.moments(snoop_tf, (1,2))
@@ -119,7 +119,7 @@ with tf.Session() as session:
         loss_weights = 1.0
     error_loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights)
     k = 0.1
-    variance_loss_tf = -k*tf.reduce_mean(tf.clip_by_value(encoder_variance_tf ,0,0.01))
+    variance_loss_tf = 0#-k*tf.reduce_mean(tf.clip_by_value(encoder_variance_tf ,0,0.01))
     loss_tf = error_loss_tf #+ variance_loss_tf
 
     ''' Training/Saver/Init ops '''
@@ -150,7 +150,7 @@ with tf.Session() as session:
                                 avg_tf : avg_block[idx:min(n,idx+minibatch_size),:,:,:],
                                 train_mode_tf : True,
                                }
-                    ape, _, snoop,loss = session.run([loss_weights, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
+                    ape, snoop,loss = session.run([loss_weights, snoop_tf], feed_dict=feed_dict)
                     tot_loss += minibatch_size * loss
                     idx += minibatch_size
                     print("-",end='',flush=True)
