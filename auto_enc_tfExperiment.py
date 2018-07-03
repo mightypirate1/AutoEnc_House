@@ -31,7 +31,7 @@ visualize_convs = True
 weight_file = "weights_tf" #for outputing weights of the net in a file....
 
 
-lr = 0.000001
+lr = 0.00001
 initial_alpha = 5.0
 minibatch_size = 32
 n = 1000 #numbre of data vectors per file
@@ -182,7 +182,7 @@ with tf.Session() as session:
             for i,x in enumerate(layer_names):
                 weight_dict[x] = []
             for i,x in enumerate(layer_names):
-                weight_dict[x].append( weights[i].shape )
+                weight_dict[x].append( weights[i] )
             for x in weight_dict:
                 print(x, weight_dict[x])
             file_output = list(weight_dict.values())
