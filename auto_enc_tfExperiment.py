@@ -152,7 +152,7 @@ with tf.Session() as session:
                                }
                     output, loss_weights, _, snoop,loss = session.run([output_tf, loss_weights_tf, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
 
-                    print("DebuG :: {} || {} || {} || {}".format(np.amax(output), np.amax(loss_weights), np.amax(snoop), np.amax(data[idx:min(n,idx+minibatch_size),:,:,:]) ))
+                    # print("DebuG :: {} || {} || {} || {}".format(np.amax(output), np.amax(loss_weights), np.amax(snoop), np.amax(data[idx:min(n,idx+minibatch_size),:,:,:]) ))
 
                     tot_loss += minibatch_size * loss
                     idx += minibatch_size
