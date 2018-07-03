@@ -145,9 +145,10 @@ with tf.Session() as session:
                 merge = tf.summary.merge_all()
                 print("[",end='',flush=True)
                 while idx<n-1:
+                    dummy = np.ones((1,96,96,3))
                     feed_dict={
-                                input_tf : data[idx:min(n,idx+minibatch_size),:,:,:],
-                                avg_tf : avg_block[idx:min(n,idx+minibatch_size),:,:,:],
+                                input_tf : dummy,#data[idx:min(n,idx+minibatch_size),:,:,:],
+                                avg_tf : dummy,#avg_block[idx:min(n,idx+minibatch_size),:,:,:],
                                 train_mode_tf : True,
                                }
                     ape, _, snoop,loss = session.run([loss_weights, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)

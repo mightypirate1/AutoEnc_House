@@ -124,10 +124,10 @@ def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None,
 
     ''' Decoder starts here... '''
     if use_dense_decoder:
-        x = tf.layers.dense(encoded, 256, activation=tf.nn.elu, kernel_initializer=initializer, bias_initializer=initializer)
+        x = tf.contrib.layers.flatten(encoded)
+        x = tf.layers.dense(x, 256, activation=tf.nn.elu, kernel_initializer=initializer, bias_initializer=initializer)
         x = tf.layers.dense(x, size[0]*size[1]*size[2], activation=tf.nn.sigmoid, kernel_initializer=initializer, bias_initializer=initializer)
-        x = tf.reshape(x, (-1, size[0], size[1],size[2]))
-        output = tf.image.resize_nearest_neighbor(x, (size[0],size[1]))
+        output = tf.reshape(x, (-1, size[0], size[1],size[2]))
         return output, snoop, positions, alpha_tf, training
     else:
         x = position_decoder(encoded,(size[0],size[1],conv_depth_3))
