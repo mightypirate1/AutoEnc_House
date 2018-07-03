@@ -112,7 +112,7 @@ def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None,
                      padding='same',
                      kernel_size=size_3,
                      strides=stride_3,
-                     activation=tf.nn.elu,
+                     activation=tf.nn.tanh,
                      kernel_initializer=initializer,
                      bias_initializer=initializer
                     )
