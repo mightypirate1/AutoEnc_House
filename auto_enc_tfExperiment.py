@@ -104,7 +104,7 @@ with tf.Session() as session:
                                         size=size,lr=lr,
                                         bn=batch_normalization,
                                         sess=session,
-                                        use_dense_decoder=True
+                                        use_dense_decoder=False
                                       )
     decoded_tf, snoop_tf, position_tf, alpha_tf, train_mode_tf = return_tensors
     _, encoder_variance_tf = tf.nn.moments(snoop_tf, (1,2))
