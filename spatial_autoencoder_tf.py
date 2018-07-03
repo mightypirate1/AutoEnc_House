@@ -16,6 +16,7 @@ def spatial_soft_argmax(z,size, alpha=1.0):
     alpha_tf = None
     # pos_x, pos_y = space_blocks(size)
     _, var = tf.nn.moments( z, (1,2), shift=None, name=None, keep_dims=True)
+    var = tf.reshape(var, (-1,1,size[2]))
     # z_max = tf.reduce_max(z, axis=1, keep_dims=True)
     # z_max = tf.reduce_max(z_max, axis=2, keep_dims=True)
     # var = var[:,0,:,:]
