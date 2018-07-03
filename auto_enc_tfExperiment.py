@@ -31,13 +31,13 @@ visualize_convs = True
 weight_file = "weights_tf" #for outputing weights of the net in a file....
 
 
-lr = 0.00005
+lr = 0.000005
 initial_alpha = 5.0
 minibatch_size = 64
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
 batch_normalization = not True
-disable_avg = True
+disable_avg = False
 weighted_loss = True
 
 def load_file(file, make_gray=False, resize=None):
@@ -114,7 +114,7 @@ with tf.Session() as session:
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf)
         mean_w, _ = tf.nn.moments( w, (1,2,3), shift=None, keep_dims=True)
-        loss_weights = 0.5*( 1+w/(mean_w+10**-6) )
+        loss_weights = 0.5*( 1+w/(mean_w+10**-3) )
     else:
         loss_weights = 1.0
     error_loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights)
