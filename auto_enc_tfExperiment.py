@@ -114,10 +114,10 @@ with tf.Session() as session:
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf)
         mean_w, _ = tf.nn.moments( w, (1,2,3), shift=None, keep_dims=True)
-        loss_weights = 0.5*( 1+w/(mean_w+10**-3) )
+        loss_weights_tf = 0.5*( 1+w/(mean_w+10**-3) )
     else:
-        loss_weights = 1.0
-    error_loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights)
+        loss_weights_tf = 1.0
+    error_loss_tf = tf.losses.mean_squared_error(output_tf, input_tf, weights=loss_weights_tf)
     k = 0.1
     variance_loss_tf = 0#-k*tf.reduce_mean(tf.clip_by_value(encoder_variance_tf ,0,0.01))
     loss_tf = error_loss_tf #+ variance_loss_tf
@@ -150,7 +150,10 @@ with tf.Session() as session:
                                 avg_tf : avg_block[idx:min(n,idx+minibatch_size),:,:,:],
                                 train_mode_tf : True,
                                }
-                    ape, _, snoop,loss = session.run([loss_weights, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
+                    output, loss_weights, _, snoop,loss = session.run([output_tf, loss_weights_tf, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
+
+                    print("DebuG :: {} || {} || {} || {}".format(np.amax(output),np.amax(loss_weights),np.amax(snoop)), np.amax(data[idx:min(n,idx+minibatch_size)) )
+
                     tot_loss += minibatch_size * loss
                     idx += minibatch_size
                     print("-",end='',flush=True)
