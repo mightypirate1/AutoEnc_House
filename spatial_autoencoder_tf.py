@@ -10,7 +10,7 @@ import spatial_softmax
 USE_POOLING = True
 
 def spatial_soft_argmax(z,size, alpha=1.0):
-    softmax = spatial_softmax.spatial_softmax(z)
+    softmax = spatial_softmax.spatial_softmax(z, temperature=alpha, trainable=True)
     x = tf.reshape(softmax[:,::2], (-1,1,size[2]))
     y = tf.reshape(softmax[:,1::2], (-1,1,size[2]))
     alpha_tf = None
@@ -49,7 +49,7 @@ def position_decoder(z,size):
     delta_x_squared = tf.square(pos_x-x_coords)
     delta_y_squared = tf.square(pos_y-y_coords)
     distance = tf.sqrt(delta_x_squared+delta_y_squared)
-    feature_map = spread-spread*distance
+    feature_map = 0.7 - distance#spread-spread*distance
     return feature_map
 
 def space_blocks(size):
