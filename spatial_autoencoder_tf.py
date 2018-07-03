@@ -10,7 +10,7 @@ import tensorflow as tf
 USE_POOLING = True
 
 def spatial_soft_argmax(z,size, alpha=1.0):
-    softmax = tf.layers.contrib.spatial_softmax(z)
+    softmax = tf.contrib.layers.spatial_softmax(z)
     x = softmax[:,::2]
     y = softmax[:,1::2]
 
