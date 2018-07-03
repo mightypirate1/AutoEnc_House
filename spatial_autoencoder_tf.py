@@ -129,7 +129,6 @@ def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None,
         x = tf.reshape(x, (-1, size[0]//2, size[1]//2,size[2]))
         output = tf.image.resize_nearest_neighbor(x, (size[0],size[1]))
         return output, snoop, positions, alpha_tf, training
-    ''' ------------------------------------- '''
     else:
         x = position_decoder(encoded,(size[0],size[1],conv_depth_3))
 
