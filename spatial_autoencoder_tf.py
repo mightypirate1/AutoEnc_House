@@ -11,9 +11,11 @@ USE_POOLING = True
 
 def spatial_soft_argmax(z,size, alpha=1.0):
     pos_x, pos_y = space_blocks(size)
-    mean, var = tf.nn.moments( z, (1,2), shift=None, name=None, keep_dims=True)
+    _, var = tf.nn.moments( z, (1,2), shift=None, name=None, keep_dims=True)
+    z_max = tf.reduce_max(z, axis=1, keep_dims=True)
+    z_max = tf.reduce_max(z_max, axis=2, keep_dims=True)
     var = var[:,0,:,:]
-    tmp = z-mean
+    tmp = z-z_max
     alpha_tf = tf.get_variable('alpha_tensor', trainable=True, shape=(1,1,z.shape[3]), initializer=tf.constant_initializer(alpha*np.ones((1,1,z.shape[3]))) )
     exp_z = tf.exp(alpha_tf*z)
     weights = tf.reduce_sum(exp_z, axis=1, keep_dims=True)
