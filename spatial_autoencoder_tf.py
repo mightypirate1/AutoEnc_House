@@ -10,22 +10,26 @@ import tensorflow as tf
 USE_POOLING = True
 
 def spatial_soft_argmax(z,size, alpha=1.0):
-    pos_x, pos_y = space_blocks(size)
+    softmax = tf.layers.contrib.spatial_softmax(z)
+    x = softmax[:,::2]
+    y = softmax[:,1::2]
+
+    # pos_x, pos_y = space_blocks(size)
     _, var = tf.nn.moments( z, (1,2), shift=None, name=None, keep_dims=True)
-    z_max = tf.reduce_max(z, axis=1, keep_dims=True)
-    z_max = tf.reduce_max(z_max, axis=2, keep_dims=True)
-    var = var[:,0,:,:]
-    tmp = z-z_max
-    alpha_tf = tf.get_variable('alpha_tensor', trainable=True, shape=(1,1,z.shape[3]), initializer=tf.constant_initializer(alpha*np.ones((1,1,z.shape[3]))) )
-    exp_z = tf.exp(alpha_tf*z+10**-6)
-    weights = tf.reduce_sum(exp_z, axis=1, keep_dims=True)
-    weights = tf.reduce_sum(weights, axis=2, keep_dims=True)
-    softmax = tf.truediv(exp_z, weights)
-    map_x = pos_x * softmax
-    map_y = pos_y * softmax
-    x = tf.reduce_sum( tf.reduce_sum(map_x, axis=1, keep_dims=True), axis=2, keep_dims=False )
-    y = tf.reduce_sum( tf.reduce_sum(map_y, axis=1, keep_dims=True), axis=2, keep_dims=False )
-    return tf.concat([x,y,var], axis=1), alpha_tf
+    # z_max = tf.reduce_max(z, axis=1, keep_dims=True)
+    # z_max = tf.reduce_max(z_max, axis=2, keep_dims=True)
+    # var = var[:,0,:,:]
+    # tmp = z-z_max
+    # alpha_tf = tf.get_variable('alpha_tensor', trainable=True, shape=(1,1,z.shape[3]), initializer=tf.constant_initializer(alpha*np.ones((1,1,z.shape[3]))) )
+    # exp_z = tf.exp(alpha_tf*z+10**-6)
+    # weights = tf.reduce_sum(exp_z, axis=1, keep_dims=True)
+    # weights = tf.reduce_sum(weights, axis=2, keep_dims=True)
+    # softmax = tf.truediv(exp_z, weights)
+    # map_x = pos_x * softmax
+    # map_y = pos_y * softmax
+    # x = tf.reduce_sum( tf.reduce_sum(map_x, axis=1, keep_dims=True), axis=2, keep_dims=False )
+    # y = tf.reduce_sum( tf.reduce_sum(map_y, axis=1, keep_dims=True), axis=2, keep_dims=False )
+    # return tf.concat([x,y,var], axis=1), alpha_tf
 
 def position_decoder(z,size):
     ''' Takes a tensor z of shape (samples, 2 , c) where
