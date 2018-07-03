@@ -53,8 +53,8 @@ def position_decoder(z,size):
     return feature_map
 
 def space_blocks(size):
-    a = np.tile( (np.arange(size[0], dtype=np.float32)/size[0]).reshape((size[0],1,1)), (1,size[1],size[2]) )
-    b = np.tile( (np.arange(size[1], dtype=np.float32)/size[1]).reshape((1,size[1],1)), (size[0],1,size[2]) )
+    a = np.tile( 2*(np.arange(size[0], dtype=np.float32)/size[0]-1).reshape((size[0],1,1)), (1,size[1],size[2]) )
+    b = np.tile( 2*(np.arange(size[1], dtype=np.float32)/size[1]-1).reshape((1,size[1],1)), (size[0],1,size[2]) )
     return tf.convert_to_tensor(a),tf.convert_to_tensor(b)
 
 def max_abs_error(y_true, y_pred):
