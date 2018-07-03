@@ -150,7 +150,7 @@ with tf.Session() as session:
                                 avg_tf : avg_block[idx:min(n,idx+minibatch_size),:,:,:],
                                 train_mode_tf : True,
                                }
-                    ape, snoop,loss = session.run([loss_weights, snoop_tf], feed_dict=feed_dict)
+                    ape, _, snoop,loss = session.run([loss_weights, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
                     tot_loss += minibatch_size * loss
                     idx += minibatch_size
                     print("-",end='',flush=True)

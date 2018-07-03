@@ -121,61 +121,60 @@ def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None,
     snoop = x
     encoded, alpha_tf = spatial_soft_argmax(x,(size[0],size[1],conv_depth_3), alpha=alpha)
     positions = encoded
-    ''' Decoder starts here... '''
 
+    ''' Decoder starts here... '''
     if use_dense_decoder:
-        scale=2
         x = tf.layers.dense(encoded, 256, activation=tf.nn.elu, kernel_initializer=initializer, bias_initializer=initializer)
-        x = tf.layers.dense(encoded, size[0]*size[1]*size[2]/(scale**2), activation=tf.nn.sigmoid, kernel_initializer=initializer, bias_initializer=initializer)
+        x = tf.layers.dense(x, (size[0]//2)*(size[1]//2)*size[2], activation=tf.nn.sigmoid, kernel_initializer=initializer, bias_initializer=initializer)
         x = tf.reshape(x, (-1, size[0]//2, size[1]//2,size[2]))
         output = tf.image.resize_nearest_neighbor(x, (size[0],size[1]))
         return output, snoop, positions, alpha_tf, training
-
-    x = position_decoder(encoded,(size[0],size[1],conv_depth_3))
     ''' ------------------------------------- '''
+    else:
+        x = position_decoder(encoded,(size[0],size[1],conv_depth_3))
 
-    x = tf.layers.dropout(x, rate=0.2, training=training)
+        x = tf.layers.dropout(x, rate=0.2, training=training)
 
 
-    x = tf.layers.conv2d(
-                     x,
-                     conv_depth_3,
-                     name='deconv1',
-                     padding='same',
-                     kernel_size=size_3,
-                     strides=stride_3,
-                     activation=tf.nn.elu,
-                     kernel_initializer=initializer,
-                     bias_initializer=initializer
-                    )
-    x = tf.layers.dropout(x, rate=0.2, training=training)
+        x = tf.layers.conv2d(
+                         x,
+                         conv_depth_3,
+                         name='deconv1',
+                         padding='same',
+                         kernel_size=size_3,
+                         strides=stride_3,
+                         activation=tf.nn.elu,
+                         kernel_initializer=initializer,
+                         bias_initializer=initializer
+                        )
+        x = tf.layers.dropout(x, rate=0.2, training=training)
 
-    x = tf.layers.conv2d(
-                     x,
-                     conv_depth_2,
-                     name='deconv2',
-                     padding='same',
-                     kernel_size=size_2,
-                     strides=stride_2,
-                     activation=tf.nn.elu,
-                     kernel_initializer=initializer,
-                     bias_initializer=initializer
-                    )
-    x = tf.layers.dropout(x, rate=0.2, training=training)
+        x = tf.layers.conv2d(
+                         x,
+                         conv_depth_2,
+                         name='deconv2',
+                         padding='same',
+                         kernel_size=size_2,
+                         strides=stride_2,
+                         activation=tf.nn.elu,
+                         kernel_initializer=initializer,
+                         bias_initializer=initializer
+                        )
+        x = tf.layers.dropout(x, rate=0.2, training=training)
 
-    x = tf.layers.conv2d(
-                     x,
-                     size[2],
-                     name='deconv3',
-                     padding='same',
-                     kernel_size=size_1,
-                     strides=stride_1,
-                     activation=tf.nn.elu,
-                     kernel_initializer=initializer,
-                     bias_initializer=initializer
-                    )
-    x = tf.layers.dropout(x, rate=0.2, training=training)
+        x = tf.layers.conv2d(
+                         x,
+                         size[2],
+                         name='deconv3',
+                         padding='same',
+                         kernel_size=size_1,
+                         strides=stride_1,
+                         activation=tf.nn.elu,
+                         kernel_initializer=initializer,
+                         bias_initializer=initializer
+                        )
+        x = tf.layers.dropout(x, rate=0.2, training=training)
 
-    output = x
+        output = x
 
-    return output, snoop, positions, alpha_tf, training
+        return output, snoop, positions, alpha_tf, training
