@@ -103,7 +103,7 @@ if training:
                 first_batch = False
                 model = LSUVinit(model, data[:100,:,:,:])
 
-            # history ''= model.fit(data-avg_block,data-avg_block, batch_size=32, callbacks=[tb])
+            history ''= model.fit(data-avg_block,data-avg_block, batch_size=32, callbacks=[tb])
             print("t={} -> {} samples seen...".format(T,(T+1)*1000))
             if T%save_every_t == 0:
                 print("Saving net...",end='',flush=True)
