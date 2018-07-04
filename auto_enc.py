@@ -137,11 +137,6 @@ if testing:
         print("Saving weights to {}".format(weight_file+"{}.pkl".format(idx)))
         with open(weight_file+".pkl",'wb') as out_file:
             pickle.dump(file_output, out_file, pickle.HIGHEST_PROTOCOL)
-        exit()
-
-        print("Saving weights to {}".format(weight_file+"{}.pkl".format(idx)))
-        with open(weight_file+"{}.pkl".format(idx),'wb') as out_file:
-            pickle.dump(conv_weights_from_file(size,net), out_file, pickle.HIGHEST_PROTOCOL)
         idx += 1
 
 ''' Compare inputs and outputs '''
