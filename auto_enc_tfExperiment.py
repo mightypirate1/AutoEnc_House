@@ -31,8 +31,8 @@ visualize_convs = True
 weight_file = "weights_tf" #for outputing weights of the net in a file....
 
 
-lr = 0.00001
-initial_alpha = 5.0
+lr = 0.0001
+initial_alpha = 7.0
 minibatch_size = 32
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
