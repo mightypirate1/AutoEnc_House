@@ -174,7 +174,6 @@ with tf.Session() as session:
         for net in files:
             print("net: {}".format(net))
             saver.restore(session,net)
-            names = session.graph.get_tensor_by_name('training:0')
             tensor_names = tf.trainable_variables()
             weights = session.run(tensor_names, feed_dict=None)
             layer_names = [x.name.split("/")[0] for x in tensor_names]
@@ -184,6 +183,7 @@ with tf.Session() as session:
             for i,x in enumerate(layer_names):
                 weight_dict[x]['weights'].append( weights[i] )
             for x in weight_dict:
+                x['weights'] = x.sort(key=lambda x:x.size)
                 print(x, weight_dict[x])
             file_output = list(weight_dict.values())
             print("Saving weights to {}".format(weight_file+"{}.pkl".format(idx)))
@@ -238,14 +238,15 @@ with tf.Session() as session:
                         ax.set_aspect('equal')
                         ax.imshow(img)
                         # ''' Visualize the features detected! '''
-                        # for x,y,r in zip(positions[0,:],positions[1,:],positions[2,:]):
-                        #
-                        #     radius = 1/(r*100)
-                        #     transparency = min(1, 1/(r*10000))
-                        #
-                        #     c = Circle((size[0]*x,size[1]*y), radius=radius, fill=False )
-                        #     c.set_alpha(transparency)
-                        #     c.set_antialiased(True)
-                        #     c.set_ec(np.random.rand(3))
-                        #     ax.add_patch(c)
+                        for x,y,r in zip(positions[0,:],positions[1,:],positions[2,:]):
+                             X = 0.5*(1+x)
+                             Y = 0.5*(1+y)
+                             radius = 7#0.5*r
+                             transparency = 0.3#min(1, r*0.02)
+
+                             c = Circle((size[0]*X,size[1]*Y), radius=radius, fill=False )
+                             c.set_alpha(transparency)
+                             c.set_antialiased(True)
+                             c.set_ec(np.random.rand(3))
+                             ax.add_patch(c)
                         plt.show()

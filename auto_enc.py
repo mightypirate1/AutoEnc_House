@@ -103,7 +103,7 @@ if training:
                 first_batch = False
                 model = LSUVinit(model, data[:100,:,:,:])
 
-            history = model.fit(data-avg_block,data-avg_block, batch_size=32, callbacks=[tb])
+            # history ''= model.fit(data-avg_block,data-avg_block, batch_size=32, callbacks=[tb])
             print("t={} -> {} samples seen...".format(T,(T+1)*1000))
             if T%save_every_t == 0:
                 print("Saving net...",end='',flush=True)
@@ -116,38 +116,33 @@ if testing:
     idx = 0
     print("Layers loaded:")
     for net in files:
+        print("net: {}".format(net))
+        print("saving...")
         model.load_weights(net)
-        for layer in model.layers:
-            n = 0
-            print("---")
-            print(layer)
-            weights = layer.get_weights()
-            print( [w.shape for w in weights] )
-            for w in weights:
-                ape = 1
-                for d in w.shape:
-                    ape *= d
-                n += ape
-            print("n={}".format(n))
+        layer_names = [ l.name for l in model.layers ]
+        weights = [ l.get_weights() for l in model.layers ]
+        weight_dict={}
+        for i,x in enumerate(layer_names):
+            if "conv" in x:
+                weight_dict[x] = { 'layer' : x, 'weights' : [] }
+        for i,x in enumerate(layer_names):
+            if "conv" in x:
+                weight_dict[x]['weights'].append( weights[i][0] )
+        for x in weight_dict:
+            print(x)
+            for w in weight_dict[x]['weights']:
+                print(w.shape)
+
+        file_output = list(weight_dict.values())
+        print("Saving weights to {}".format(weight_file+"{}.pkl".format(idx)))
+        with open(weight_file+".pkl",'wb') as out_file:
+            pickle.dump(file_output, out_file, pickle.HIGHEST_PROTOCOL)
+        exit()
 
         print("Saving weights to {}".format(weight_file+"{}.pkl".format(idx)))
         with open(weight_file+"{}.pkl".format(idx),'wb') as out_file:
             pickle.dump(conv_weights_from_file(size,net), out_file, pickle.HIGHEST_PROTOCOL)
         idx += 1
-
-# ''' Get some stats '''
-# if testing and False:
-#
-#     for net in files:
-#         model.load_weights(net)
-#         result = np.empty((18000))
-#         for i, infile in enumerate(os.listdir(work_dir)):
-#             with open(work_dir+"/"+infile,'rb') as file:
-#                 data, _, _, _ = load_file(file)
-#             predictions = model.predict(data)
-#             true_answer = data
-#             result[i*1000:(i+1)*1000] = np.mean( (predictions-true_answer)**2, axis=(1,2,3) )
-#         print("[{}] ::  Mean(MSE): {} \t Var(MSE): {}".format(net, np.mean(result),np.var(result) ))
 
 ''' Compare inputs and outputs '''
 if testing:
