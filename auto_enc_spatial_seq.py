@@ -22,6 +22,7 @@ weight_file = "weights_tf" #for outputing weights of the net in a file....
 
 lr = 0.0001
 initial_alpha = 7.0
+down_factor = 4
 minibatch_size = 32
 n = 1000 #numbre of data vectors per file
 n_epochs = 4100
@@ -90,6 +91,7 @@ with tf.Session() as session:
     return_tensors = make_autoencoder(
                                         autoencoder_input_tf,
                                         alpha=initial_alpha,
+                                        down_factor=down_factor,
                                         size=size,lr=lr,
                                         bn=batch_normalization,
                                         sess=session,
@@ -103,7 +105,7 @@ with tf.Session() as session:
     ''' Loss '''
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf[:,1,:,:,:])
-        w = tf.layers.max_pooling2d(x, down_factor, down_factor, padding='same')
+        w = tf.layers.max_pooling2d(w, down_factor, down_factor, padding='same')
         w = tf.reduce_mean(w, axis=-1, keep_dims=True)
         mean_w, _ = tf.nn.moments( w, (1,2,3), shift=None, keep_dims=True)
         loss_weights_tf = 0.5*( 1+w/(mean_w+10**-3) )
