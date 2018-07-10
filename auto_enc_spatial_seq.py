@@ -20,7 +20,7 @@ visualize_convs = True
 weight_file = "weights_tf" #for outputing weights of the net in a file....
 
 
-lr = 0.0001
+lr = 0.00001
 initial_alpha = 7.0
 down_factor = 4
 minibatch_size = 32
@@ -204,6 +204,8 @@ with tf.Session() as session:
                 with open(work_dir+project+"/data/"+infile,'rb') as file:
                     raw_data, n, avg, _ = load_file(file)
                 data = preprocess_sequence(raw_data,size)
+                if n < 3:
+                    continue
                 # for i in range(data.shape[0]):
                 for j in range(1):
                     i = np.random.randint(0,high=data.shape[0])
