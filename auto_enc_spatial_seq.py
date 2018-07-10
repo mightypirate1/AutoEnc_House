@@ -202,14 +202,15 @@ with tf.Session() as session:
             saver.restore(session,net)
             for infile in os.listdir(work_dir+project+"/data"):
                 with open(work_dir+project+"/data/"+infile,'rb') as file:
-                    data, n, avg, _ = load_file(file)
-                for i in range(n):
+                    raw_data, n, avg, _ = load_file(file)
+                data = preprocess_sequence(raw_data,size)
+                for i in range(data.shape[0]):
                     feed_dict={
                                 input_tf : data[i,:,:,:][np.newaxis,:],
                                 avg_tf : avg,
                                 train_mode_tf : False,
                                }
-                    output,snoop, positions, loss = session.run([output_tf, snoop_tf, position_tf, loss_tf], feed_dict=feed_dict)
+                    output,snoop, positions, loss = session.run([output_tf, snoop_tf, position_t_tf, loss_tf], feed_dict=feed_dict)
                     org = data[i,:,:,:]
                     clone = output[0]
                     snoop_layers = snoop[0]
