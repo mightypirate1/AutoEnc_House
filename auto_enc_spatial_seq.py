@@ -13,7 +13,7 @@ from spatial_autoencoder_SEQ_tf import make_autoencoder, preprocess_sequence, sm
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
-project = "pepperBig_spatialTest/"#"dev_env"
+project = "pepper_fpv/"#"dev_env"
 save_every_t = 10
 display_result = not False
 visualize_convs = True
