@@ -9,7 +9,7 @@ import tensorflow as tf
 import spatial_softmax
 USE_POOLING = True
 
-def grey_downsample(x, in_size, down_factor=2):
+def grey_downsample(x, in_size, down_factor=4):
     z = tf.reduce_mean(x, axis=-1, keep_dims=True)
     z = tf.image.resize_images(z, (in_size[0]/down_factor, in_size[1]/down_factor))
     return z
@@ -41,7 +41,7 @@ def smooth_loss(x):
 
 
 
-def position_decoder(z,size):
+def position_decoder(z,size, down_factor=4):
     ''' Takes a tensor z of shape (samples, 2 , c) where
         the 2nd dimention refers to x,y coordintates. I.e. x,y coordintates for
         c number of features. Returns feature maps of desired size
@@ -148,13 +148,15 @@ def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None,
 
     if use_dense_decoder:
         ''' As in paper... '''
+        print("Using DENSE decoder!")
         x = tf.contrib.layers.flatten(encoded_x_t)
         x = tf.layers.dense(x, 1024, activation=tf.nn.elu, kernel_initializer=initializer, bias_initializer=initializer)
-        x = tf.layers.dense(x, size[0]*size[1]*size[2], activation=tf.nn.tanh, kernel_initializer=initializer, bias_initializer=initializer)
-        output = tf.reshape(x, (-1, size[0], size[1],size[2]))
+        x = tf.layers.dense(x, int(size[0]*size[1]*size[2]/(down_factor**2)), activation=tf.nn.tanh, kernel_initializer=initializer, bias_initializer=initializer)
+        output = tf.reshape(x, (-1, int(size[0]/down_factor, size[1]/down_factor,size[2])))
         return output, snoop, positions, alpha_tf, training
     else:
         ''' Another way of doing it... '''
+        print("Using Convolutional decoder!")
         x = position_decoder(encoded_x_t,(size[0],size[1],conv_depth_3))
 
         x = tf.layers.dropout(x, rate=0.2, training=training)
@@ -177,7 +179,7 @@ def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None,
                          name='deconv2',
                          padding='same',
                          kernel_size=size_2,
-                         strides=stride_2,
+                         strides=int(stride_2*(down_factor/2)),
                          activation=tf.nn.elu,
                          kernel_initializer=initializer,
                          bias_initializer=initializer
@@ -186,11 +188,11 @@ def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None,
 
         x = tf.layers.conv2d(
                          x,
-                         size[2],
+                         1,
                          name='deconv3',
                          padding='same',
                          kernel_size=size_1,
-                         strides=stride_1,
+                         strides=int(stride_1*(down_factor/2)),
                          activation=tf.nn.tanh,
                          kernel_initializer=initializer,
                          bias_initializer=initializer
