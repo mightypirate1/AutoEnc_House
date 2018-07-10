@@ -204,7 +204,9 @@ with tf.Session() as session:
                 with open(work_dir+project+"/data/"+infile,'rb') as file:
                     raw_data, n, avg, _ = load_file(file)
                 data = preprocess_sequence(raw_data,size)
-                for i in range(data.shape[0]):
+                # for i in range(data.shape[0]):
+                for j in range(1):
+                    i = np.random.randint(0,high=data.shape[0])
                     feed_dict={
                                 input_tf : data[i,:,:,:][np.newaxis,:],
                                 avg_tf : avg,
