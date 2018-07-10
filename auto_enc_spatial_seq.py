@@ -99,7 +99,7 @@ with tf.Session() as session:
     position_t_minus1_tf, position_t_tf, position_t_plus1_tf = positions_tf
 
     _, encoder_variance_tf = tf.nn.moments(snoop_tf, (1,2))
-    output_tf = decoded_tf if disable_avg else decoded_tf + avg_tf
+    output_tf = decoded_tf if disable_avg else decoded_tf + grey_downsample(avg_tf)
     ''' Loss '''
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf[:,1,:,:,:])
