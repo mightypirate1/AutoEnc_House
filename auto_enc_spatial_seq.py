@@ -130,20 +130,24 @@ with tf.Session() as session:
 
         T=-1
         total_samples = 0
+        avg = np.zeros((1,)+size)
         for t in range(n_epochs):
             for infile in os.listdir(work_dir+project+"/data"):
                 T+=1
                 with open(work_dir+project+"/data/"+infile,'rb') as file:
-                    raw_data, n, avg, avg_block = load_file(file)
+                    raw_data, n, new_avg, _ = load_file(file)
+                avg = (total_samples*avg+n*new_avg)/(total_samples+n)
                 data = preprocess_sequence(raw_data,size)
+
+                m = data.shape[0] #n after procesing. should be n-2
                 idx=0
                 tot_loss = 0
                 merge = tf.summary.merge_all()
                 print("[",end='',flush=True)
                 while idx<n-1:
                     feed_dict={
-                                input_tf : data[idx:min(n,idx+minibatch_size),:,:,:],
-                                avg_tf : avg_block[idx:min(n,idx+minibatch_size),:,:,:],
+                                input_tf : data[idx:min(m,idx+minibatch_size),:,:,:],
+                                avg_tf : avg,
                                 train_mode_tf : True,
                                }
                     output, loss_weights, _, snoop,loss = session.run([output_tf, loss_weights_tf, training_ops, snoop_tf, loss_tf], feed_dict=feed_dict)
