@@ -187,7 +187,7 @@ with tf.Session() as session:
             for i,x in enumerate(layer_names):
                 weight_dict[x]['weights'].append( weights[i] )
             for x in weight_dict:
-                x['weights'] = x.sort(key=lambda x:x.size)
+                weight_dict[x]['weights'] = weight_dict[x]['weights'].sort(key=lambda x:x.size)
                 print(x, weight_dict[x])
             file_output = list(weight_dict.values())
             print("Saving weights to {}".format(weight_file+"{}.pkl".format(idx)))
