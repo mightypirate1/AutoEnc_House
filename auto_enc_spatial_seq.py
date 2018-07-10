@@ -212,9 +212,8 @@ with tf.Session() as session:
                                }
                     output,snoop, positions, loss = session.run([output_tf, snoop_tf, position_t_tf, loss_tf], feed_dict=feed_dict)
                     org = data[i,1,:,:,:]
-                    out = output[0,:,:,0]
-                    clone = resize(out, down_factor)
-                    clone = np.repeat((np.amax(out)*clone/np.amax(clone)).reshape((size[0],size[1],1)),3,axis=2)
+                    out = output[0,:,:,:]
+                    clone = out.repeat(down_factor,axis=0).repeat(down_factor,axis=1)
                     snoop_layers = snoop[0]
                     positions = positions[0]
                     e = loss #np.sqrt(np.sum(np.square(np.abs(org-clone)),axis=2)).reshape(-1)
