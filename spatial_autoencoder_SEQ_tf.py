@@ -37,7 +37,7 @@ def smooth_loss(x):
     x_t        = b[:,:2,:]
     x_t_plus1  = c[:,:2,:]
     smooth_term = tf.reduce_sum( tf.square((x_t - x_t_minus1) - (x_t_plus1 - x_t)), axis=1 )
-    return tf.reduce_mean(smooth_term, axis=0)
+    return tf.reduce_mean(smooth_term)
 
 
 
