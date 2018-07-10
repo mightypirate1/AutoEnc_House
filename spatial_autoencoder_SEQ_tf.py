@@ -11,7 +11,7 @@ USE_POOLING = True
 
 def grey_downsample(x, in_size, down_factor=4):
     z = tf.reduce_mean(x, axis=-1, keep_dims=True)
-    z = tf.image.resize_images(z, (in_size[0]/down_factor, in_size[1]/down_factor))
+    z = tf.image.resize_images(z, (int(in_size[0]/down_factor), int(in_size[1]/down_factor)))
     return z
 
 def preprocess_sequence(x,size):
