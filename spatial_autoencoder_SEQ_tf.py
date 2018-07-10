@@ -77,10 +77,10 @@ def custom_loss(y_true, y_pred):
 def make_autoencoder(input_tensor, size, down_factor=4, alpha=1.0, lr=0.02,bn=False, sess=None, use_dense_decoder=False):
     initializer = tf.contrib.layers.xavier_initializer_conv2d(uniform=True)
     training = tf.placeholder(dtype=tf.bool, name='training')
-    conv_depth_1 = 32
+    conv_depth_1 = 64
     conv_depth_2 = 32
-    conv_depth_3 = 64
-    size_1 = (5,5)#(8,8)
+    conv_depth_3 = 16
+    size_1 = (7,7)#(8,8)
     size_2 = (5,5)
     size_3 = (5,5)
     stride_1 = 1

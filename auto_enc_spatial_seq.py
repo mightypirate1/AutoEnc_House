@@ -133,9 +133,12 @@ with tf.Session() as session:
         avg = np.zeros((1,)+size)
         for t in range(n_epochs):
             for infile in os.listdir(work_dir+project+"/data"):
-                T+=1
                 with open(work_dir+project+"/data/"+infile,'rb') as file:
                     raw_data, n, new_avg, _ = load_file(file)
+                if n<10:
+                    print("Batch too small: skipping!")
+                    continue
+                T+=1
                 avg = (total_samples*avg+n*new_avg)/(total_samples+n)
                 data = preprocess_sequence(raw_data,size)
 
