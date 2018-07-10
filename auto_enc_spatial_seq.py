@@ -103,6 +103,8 @@ with tf.Session() as session:
     ''' Loss '''
     if weighted_loss:
         w = tf.abs(avg_tf-input_tf[:,1,:,:,:])
+        w = tf.layers.max_pooling2d(x, down_factor, down_factor, padding='same')
+        w = tf.reduce_mean(w, axis=-1, keep_dims=True)
         mean_w, _ = tf.nn.moments( w, (1,2,3), shift=None, keep_dims=True)
         loss_weights_tf = 0.5*( 1+w/(mean_w+10**-3) )
     else:
