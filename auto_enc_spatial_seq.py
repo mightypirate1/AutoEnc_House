@@ -87,7 +87,7 @@ with tf.Session() as session:
     avg_tf = tf.placeholder(shape=(None,)+size, dtype=tf.float32)
 
     ''' Dataflow '''
-    autoencoder_input_tf = input_tf if disable_avg else input_tf-avg_tf
+    autoencoder_input_tf = input_tf if disable_avg else input_tf[:,1,:,:,:]-avg_tf
     return_tensors = make_autoencoder(
                                         autoencoder_input_tf,
                                         alpha=initial_alpha,
