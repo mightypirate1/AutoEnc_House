@@ -9,7 +9,7 @@ import keras
 import tensorflow as tf
 from matplotlib.patches import Circle
 
-from spatial_autoencoder_SEQ_tf import make_autoencoder, preprocess_sequence, smooth_loss
+from spatial_autoencoder_SEQ_tf import make_autoencoder, preprocess_sequence, smooth_loss, grey_downsample
 
 MAKE_GRAYSCALE = False
 work_dir = "knut/"
