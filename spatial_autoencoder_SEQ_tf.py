@@ -41,7 +41,7 @@ def smooth_loss(x):
 
 
 
-def position_decoder(z,size, down_factor=4):
+def position_decoder(z,size):
     ''' Takes a tensor z of shape (samples, 2 , c) where
         the 2nd dimention refers to x,y coordintates. I.e. x,y coordintates for
         c number of features. Returns feature maps of desired size
@@ -74,7 +74,7 @@ def custom_loss(y_true, y_pred):
     b = 1.0
     return a*max_abs_error(y_true, y_pred) + b*keras.losses.mean_absolute_error(y_true, y_pred)
 
-def make_autoencoder(input_tensor, size, alpha=1.0, lr=0.02,bn=False, sess=None, use_dense_decoder=False):
+def make_autoencoder(input_tensor, size, down_factor=4, alpha=1.0, lr=0.02,bn=False, sess=None, use_dense_decoder=False):
     initializer = tf.contrib.layers.xavier_initializer_conv2d(uniform=True)
     training = tf.placeholder(dtype=tf.bool, name='training')
     conv_depth_1 = 32
