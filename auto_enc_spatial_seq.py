@@ -147,7 +147,7 @@ with tf.Session() as session:
                 tot_loss = 0
                 merge = tf.summary.merge_all()
                 print("[",end='',flush=True)
-                while idx<n-1:
+                while idx<m-1:
                     feed_dict={
                                 input_tf : data[idx:min(m,idx+minibatch_size),:,:,:],
                                 avg_tf : avg,
