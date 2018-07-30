@@ -14,6 +14,7 @@ import scipy
 import settings as s
 import collections
 from docopt import docopt
+from datetime import datetime
 from autoencoder_modules import make_autoencoder, preprocess_sequence, smooth_loss, grey_downsample, space_blocks
 work_dir = "knut/"
 
@@ -21,7 +22,6 @@ work_dir = "knut/"
 ####
 ####    Large block of auxilliary functions
 ####
-
 '''  <THESE FUNCTIONS ARE JUST FOR DEBUGGING....> '''
 def sb(size):
     x = 2*np.arange(size[0]).reshape((size[0],1,1))/(size[0]-1)-1
@@ -147,7 +147,7 @@ def get_data_from_files(files, start_idx, n_samples):
 
 docoptstring = '''AutoEnc_House.
 Usage:
-  auto_enc.py --train [--settings=<settings>]
+  auto_enc.py --train [--settings=<settings>] [--no-interction]
   auto_enc.py --test [--settings=<settings>] <nn>...
 '''
 arguments = docopt(docoptstring)
@@ -233,6 +233,7 @@ with tf.Session() as session:
 
         try:
             print("=========================")
+            print("{}: Training started!".format(print(datetime.now())))
             for t in range(settings['n_epochs']):
                 #Load data for training & testing
                 data, new_avg, n, train_file_idx = get_data_from_files( train_data_files, train_file_idx, 3000 )
@@ -288,7 +289,7 @@ with tf.Session() as session:
                     with open(avg_file,'wb') as out_file:
                         pickle.dump(avg, out_file, pickle.HIGHEST_PROTOCOL)
                     path = work_dir+project+"/nets_tf/AE_tf_{}".format(10000+t)
-                    print("Saving net ({})...".format(path),end='',flush=True)
+                    print("{}: Saving net ({})...".format(datetime.now(),path),end='',flush=True)
                     save_path = saver.save(session, path)
                     print("[x]")
 
@@ -305,13 +306,15 @@ with tf.Session() as session:
             else:
                 print("AutoEncoder training cancelled by user!")
             print("---------------------------------------")
-            input("Do you want to export these wights to use for initialization? ([enter] to continue, [ctrl-C] to abort)")
+            if not settings['--no-interaction']:
+                input("Do you want to export these wights to use for initialization? ([enter] to continue, [ctrl-C] to abort)")
             save_weights_to_file(work_dir+project+"init/weights")
             if settings['avg_subtraction']:
                 avg_out_file = work_dir+project+"init/avg_img"
                 print("Saving average-file to: {}".format(avg_out_file))
                 with open(avg_out_file, 'wb') as out_file:
                     pickle.dump(avg, out_file, pickle.HIGHEST_PROTOCOL)
+            print( "{}: Training ended.".format(print(datetime.now())) )
 
 #
 #
