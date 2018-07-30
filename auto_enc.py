@@ -259,7 +259,7 @@ with tf.Session() as session:
                 print("] :: ",end='',flush=True)
                 # train_writer.add_summary(summary, t)
                 total_samples += n
-                print("trainloss={} | t={} -> n={} | {}".format(tot_loss/n, t, total_samples) )
+                print("trainloss={} | t={} -> n={}".format(tot_loss/n, t, total_samples) )
 
                 #Test-set stuff:
                 idx = 0
