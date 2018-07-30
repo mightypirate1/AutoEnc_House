@@ -251,7 +251,7 @@ with tf.Session() as session:
                 print("] :: ",end='',flush=True)
                 # train_writer.add_summary(summary, t)
                 total_samples += n
-                print("t={} -> n={} | {}".format(t,total_samples,tot_loss/n) )
+                print("trainloss={} | t={} -> n={} | {}".format(tot_loss/n, t, total_samples) )
 
                 #Test-set stuff:
                 idx = 0
@@ -270,7 +270,7 @@ with tf.Session() as session:
                     if idx/n_train - last_print > 0.05:
                         print("-",end='',flush=True)
                         last_print += 0.05
-                print("] :: ",end='',flush=True)
+                print("] :: =",end='',flush=True)
                 print("testloss={}".format(test_loss / n_train))
                 loss_history.append(test_loss)
 
@@ -293,7 +293,6 @@ with tf.Session() as session:
             print("---------------------------------------")
             if type(e) is DoneSignal:
                 print(e.message)
-                e.debug_print()
             else:
                 print("AutoEncoder training cancelled by user!")
             print("---------------------------------------")
