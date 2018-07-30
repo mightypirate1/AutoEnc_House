@@ -6,7 +6,6 @@ import os
 import matplotlib.pyplot as plt
 import cv2
 import scipy
-import keras
 import tensorflow as tf
 from matplotlib.patches import Circle
 import code
