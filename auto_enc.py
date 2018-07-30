@@ -147,11 +147,10 @@ def get_data_from_files(files, start_idx, n_samples):
 
 docoptstring = '''AutoEnc_House.
 Usage:
-  auto_enc.py --train [--settings=<settings>] [--no-interction]
-  auto_enc.py --test [--settings=<settings>] <nn>...
+  auto_enc.py --train [-q] [--settings=<settings>]
+  auto_enc.py --test [-q] [--settings=<settings>] <nn>...
 '''
 arguments = docopt(docoptstring)
-
 #Load settings!
 if not arguments['--settings']:
     #Default settings if none were specified!
