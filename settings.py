@@ -55,7 +55,7 @@ default_settings =  {
                       'project_folder' : 'default_project',
                       'description' : "This configuration has no description. It is good practice to specify one in settings.py"
                     }
-                    
+
 #########
 #########
 #########
@@ -125,10 +125,15 @@ regular_conv_ae_small_bottleneck  =     {
                                             'description' : "This is a regular convolutional AE. architecture is: x->[3xConv]->[flatten+dense(32)]->encoded->[dense+reshape]->[3xConv]->y  with bn after each layer!"
                                         }
 
+
+#To make your conf accessible through lazy referencing, add it here!
+quick_list = [x for x in dir() if "_ae_" in x]
+
 ###############
 # Dont touch! #
 ###############
 
+__dir__ = dir()
 def parse_conf(setting):
     for x in default_settings:
         if x not in setting:
@@ -146,5 +151,17 @@ def parse_conf(setting):
     print("---------------------------------------")
     return setting
 
-
-
+def get_conf(arg):
+    if arg in __dir__:
+        return eval(arg)
+    elif arg in [str(x) for x in range(len(quick_list))]:
+        return eval(quick_list[int(arg)])
+    else:
+        print("---------------------")
+        print("Valid configurations:")
+        for d in __dir__:
+            if not ("__" in d or d in ['get_conf', 'parse_conf', 'quick_list']):
+                print(d)
+        print("---------------------")
+        print(quick_list)
+        raise ValueError("Invalid settings request!")

@@ -14,13 +14,24 @@ import math
 import scipy
 import settings as s
 import collections
+from docopt import docopt
 from autoencoder_modules import make_autoencoder, preprocess_sequence, smooth_loss, grey_downsample, space_blocks
 work_dir = "knut/"
 
-''' HERE IS WHERE YOU SET THE CONFIGURATION! '''
-settings = s.parse_conf( s.spatial_ae_conv )
-''' BEST IS TO LEAVE THE REST OF THE CODE AS IS :) '''
 
+docstring = '''AutoEnc_House.
+Usage:
+  auto_enc.py --train [--settings=<settings>]
+  auto_enc.py --test [--settings=<settings>] <nn>
+'''
+arguments = docopt(docstring)
+print(arguments)
+
+if not arguments['--settings']:
+    #Default settings if none were specified!
+    settings = s.parse_conf( s.spatial_ae_conv )
+else:
+    settings = s.parse_conf( s.get_conf( arguments['--settings'] ) )
 
 '''  <THESE FUNCTIONS ARE JUST FOR DEBUGGING....> '''
 def sb(size):
@@ -147,12 +158,9 @@ def get_data_from_files(files, start_idx, n_samples):
 ############
 
 files = sys.argv[2:]
-n_files = len(sys.argv[2:])
-mode = sys.argv[1]
-assert mode in ["--train", "--test"], "Invalid mode..."
-training = True if mode=="--train" else False
-testing = not training
-file_idx = 0
+files = arguments['<nn>']
+training = arguments['--train']
+testing = arguments['--test']
 project = settings['project_folder']
 save_every_t = 10
 weight_file = "weights_tf" #for outputing weights of the net in a file....
