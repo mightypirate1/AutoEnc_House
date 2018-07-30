@@ -234,7 +234,7 @@ with tf.Session() as session:
 
         try:
             print("=========================")
-            print("{}: Training started!".format(print(datetime.now())))
+            print("{}: Training started!".format(datetime.now()))
             for t in range(settings['n_epochs']):
                 #Load data for training & testing
                 data, new_avg, n, train_file_idx = get_data_from_files( train_data_files, train_file_idx, 3000 )
@@ -321,7 +321,7 @@ with tf.Session() as session:
                 print("Saving average-file to: {}".format(avg_out_file))
                 with open(avg_out_file, 'wb') as out_file:
                     pickle.dump(avg, out_file, pickle.HIGHEST_PROTOCOL)
-            print( "{}: Training ended.".format(print(datetime.now())) )
+            print( "{}: Training ended.".format(datetime.now()) )
 
 #
 #
