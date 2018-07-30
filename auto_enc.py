@@ -106,10 +106,16 @@ def save_weights_to_file(file_path):
     weights = session.run(tensor_names, feed_dict=None)
     layer_names = [x.name.split("/") for x in tensor_names]
     weight_dict={}
+    for l in layer_names:
+        print(l)
+    exit()
     for i,x in enumerate(layer_names):
         weight_dict[x[0]] = { 'layer' : x[0], 'weights' : {} }
     for i,x in enumerate(layer_names):
-        if 'batch' in x[0] or 'conv' in x[0] or 'spatial_soft_argmax' in x[0]:
+        if 'batch' in x[0] or 'conv' in x[0] or 'spatial_soft_argmax' in x[0], of 'encoder_layer' in x[0]:
+            if 'encoder_layer' in x[0]:
+                print(x[1].split(":")[0])
+                exit()
             weight_dict[x[0]]['weights'][ x[1].split(":")[0] ] = weights[i]
     file_output = list(weight_dict.values())
     for x in file_output:
@@ -313,7 +319,7 @@ with tf.Session() as session:
             else:
                 print("AutoEncoder training cancelled by user!")
             print("---------------------------------------")
-            if not settings['--no-interaction']:
+            if not settings['-q']:
                 input("Do you want to export these wights to use for initialization? ([enter] to continue, [ctrl-C] to abort)")
             save_weights_to_file(work_dir+project+"init/weights")
             if settings['avg_subtraction']:

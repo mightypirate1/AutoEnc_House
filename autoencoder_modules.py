@@ -12,7 +12,6 @@ def grey_downsample(x, in_size, down_factor=4, gray=True):
         z = tf.reduce_mean(z, axis=-1, keep_dims=True)
     z = tf.image.resize_images(z, (int(in_size[0]/down_factor), int(in_size[1]/down_factor)))
     return z
-
 def preprocess_sequence(x,size):
     n = x.shape[0]
     ret_x = np.empty((n-2,3)+size)
@@ -20,7 +19,6 @@ def preprocess_sequence(x,size):
     ret_x[:,1,:,:,:] = x[1:-1,:,:,:] #for t
     ret_x[:,2,:,:,:] = x[2:  ,:,:,:] #for t+1
     return ret_x
-
 def smooth_loss(x):
     a, b, c = x
     n_dims = len(a.get_shape().as_list())
