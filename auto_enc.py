@@ -412,7 +412,7 @@ with tf.Session() as session:
                         #    c = Circle((size[0]*X,size[1]*Y), radius=radius[1]*scale, fill=False, linewidth=3.0 )
                         #else:
                         #    continue
-                            c = Circle((size[0]*X,size[1]*Y), radius=radius[0]*scale, fill=True )
+                        c = Circle((size[0]*X,size[1]*Y), radius=radius[0]*scale, fill=True )
                         c.set_alpha(transparency)
                         c.set_antialiased(True)
                         c.set_ec(color_dict[i])
