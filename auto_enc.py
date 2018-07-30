@@ -332,7 +332,7 @@ with tf.Session() as session:
             #For each sample: run through autoencoder, and visualize the result!
             for i in range(n_train):
                 feed_dict={
-                            input_tf : data[i,:,:,:][np.newaxis,:],
+                            input_tf : test_data[i,:,:,:][np.newaxis,:],
                             avg_tf : avg,
                             train_mode_tf : False,
                            }
