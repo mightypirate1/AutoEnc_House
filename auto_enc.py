@@ -109,7 +109,7 @@ def save_weights_to_file(file_path):
     for i,x in enumerate(layer_names):
         weight_dict[x[0]] = { 'layer' : x[0], 'weights' : {} }
     for i,x in enumerate(layer_names):
-        if 'batch' in x[0] or 'conv' in x[0]:
+        if 'batch' in x[0] or 'conv' in x[0] or 'spatial_soft_argmax' in x[0]:
             weight_dict[x[0]]['weights'][ x[1].split(":")[0] ] = weights[i]
     file_output = list(weight_dict.values())
     for x in file_output:
