@@ -19,19 +19,9 @@ from autoencoder_modules import make_autoencoder, preprocess_sequence, smooth_lo
 work_dir = "knut/"
 
 
-docstring = '''AutoEnc_House.
-Usage:
-  auto_enc.py --train [--settings=<settings>]
-  auto_enc.py --test [--settings=<settings>] <nn>
-'''
-arguments = docopt(docstring)
-print(arguments)
-
-if not arguments['--settings']:
-    #Default settings if none were specified!
-    settings = s.parse_conf( s.spatial_ae_conv )
-else:
-    settings = s.parse_conf( s.get_conf( arguments['--settings'] ) )
+####
+####    Large block of auxilliary functions
+####
 
 '''  <THESE FUNCTIONS ARE JUST FOR DEBUGGING....> '''
 def sb(size):
@@ -153,11 +143,22 @@ def get_data_from_files(files, start_idx, n_samples):
     return data, avg, n, stop_idx
 
 ############
-############
-############
+############    Actual code below!
 ############
 
-files = sys.argv[2:]
+docoptstring = '''AutoEnc_House.
+Usage:
+  auto_enc.py --train [--settings=<settings>]
+  auto_enc.py --test [--settings=<settings>] <nn>
+'''
+arguments = docopt(docoptstring)
+
+#Load settings!
+if not arguments['--settings']:
+    #Default settings if none were specified!
+    settings = s.parse_conf( s.spatial_ae_conv )
+else:
+    settings = s.parse_conf( s.get_conf( arguments['--settings'] ) )
 files = arguments['<nn>']
 training = arguments['--train']
 testing = arguments['--test']
@@ -292,7 +293,7 @@ with tf.Session() as session:
                     print("[x]")
 
                 #If the average test-loss of the last n/2 time steps is NOT lower than the average over the last n timesteps, we think loss is not decreasing!
-                if len(loss_history) == loss_history.maxlen and (sum(loss_history) < 2*sum(list(loss_history)[:loss_history.maxlen//2])):
+                if t > 500 and len(loss_history) == loss_history.maxlen and (sum(loss_history) < 2*sum(list(loss_history)[:loss_history.maxlen//2])):
                     input("THIS IS A HYPOTHETICAL STOP SIGNAL DUE TO NON-DECREASING TEST-LOSS. [Ctrl-C] to stop, [Enter] to ignore.")
                     # raise DoneSignal("Training done: test-loss not decreasing after {} epochs.", data=loss_history)
 
