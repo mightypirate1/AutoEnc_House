@@ -339,7 +339,7 @@ with tf.Session() as session:
                 ret = session.run([output_tf, position_t_tf, error_loss_tf, smooth_loss_tf, presence_loss_tf]+list(snoop_tf), feed_dict=feed_dict)
                 output, positions, error_loss, smooth_loss, presence_loss = ret[:5]
                 snoops = ret[5:]
-                org = data[i,1,:,:,:]
+                org = test_data[i,1,:,:,:]
                 out = output[0,:,:,:].repeat(settings['down_factor'],axis=0).repeat(settings['down_factor'],axis=1)
                 if settings['gray']:
                     out = out.repeat(3,axis=2)
