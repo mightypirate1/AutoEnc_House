@@ -149,7 +149,7 @@ def get_data_from_files(files, start_idx, n_samples):
 docoptstring = '''AutoEnc_House.
 Usage:
   auto_enc.py --train [--settings=<settings>]
-  auto_enc.py --test [--settings=<settings>] <nn>
+  auto_enc.py --test [--settings=<settings>] <nn>...
 '''
 arguments = docopt(docoptstring)
 
@@ -160,6 +160,7 @@ if not arguments['--settings']:
 else:
     settings = s.parse_conf( s.get_conf( arguments['--settings'] ) )
 files = arguments['<nn>']
+
 training = arguments['--train']
 testing = arguments['--test']
 project = settings['project_folder']
