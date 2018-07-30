@@ -106,9 +106,6 @@ def save_weights_to_file(file_path):
     weights = session.run(tensor_names, feed_dict=None)
     layer_names = [x.name.split("/") for x in tensor_names]
     weight_dict={}
-    for l in layer_names:
-        print(l)
-    exit()
     for i,x in enumerate(layer_names):
         weight_dict[x[0]] = { 'layer' : x[0], 'weights' : {} }
     for i,x in enumerate(layer_names):
