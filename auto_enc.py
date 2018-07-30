@@ -230,6 +230,8 @@ with tf.Session() as session:
         avg = np.zeros((1,)+size)
 
         loss_history = collections.deque(maxlen=40)
+        best_test_loss = 10000000 #infinity
+        t_best_test_loss = 0
 
         try:
             print("=========================")
@@ -284,6 +286,11 @@ with tf.Session() as session:
                 print("testloss={}".format(test_loss / n_train))
                 loss_history.append(test_loss)
 
+                #Update best test loss
+                if test_loss < best_test_loss:
+                    best_test_loss = test_loss
+                    t_best_test_loss = t
+
                 #Save if it's time to save!
                 if t%save_every_t == 0:
                     with open(avg_file,'wb') as out_file:
@@ -293,11 +300,12 @@ with tf.Session() as session:
                     save_path = saver.save(session, path)
                     print("[x]")
 
-                #If the average test-loss of the last n/2 time steps is NOT lower than the average over the last n timesteps, we think loss is not decreasing!
-                if t > 500 and len(loss_history) == loss_history.maxlen and (sum(loss_history) < 2*sum(list(loss_history)[:loss_history.maxlen//2])):
-                    input("THIS IS A HYPOTHETICAL STOP SIGNAL DUE TO NON-DECREASING TEST-LOSS. [Ctrl-C] to stop, [Enter] to ignore.")
-                    # raise DoneSignal("Training done: test-loss not decreasing after {} epochs.", data=loss_history)
-
+                if t - t_best_test_loss > 30:
+                    raise DoneSignal("Training done: 30 epochs with no improvement of test-loss.  {} epochs of training done.".format(t), data=loss_history)
+                # #If the average test-loss of the last n/2 time steps is NOT lower than the average over the last n timesteps, we think loss is not decreasing!
+                # if t > 500 and len(loss_history) == loss_history.maxlen and (sum(loss_history) < 2*sum(list(loss_history)[:loss_history.maxlen//2])):
+                #     input("THIS IS A HYPOTHETICAL STOP SIGNAL DUE TO NON-DECREASING TEST-LOSS. [Ctrl-C] to stop, [Enter] to ignore.")
+                #     # raise DoneSignal("Training done: test-loss not decreasing after {} epochs.".format(t), data=loss_history)
             raise DoneSignal("Training done: epoch-limit {} reached.".format(settings['n_epochs']))
         except (KeyboardInterrupt, DoneSignal) as e:
             print("---------------------------------------")
