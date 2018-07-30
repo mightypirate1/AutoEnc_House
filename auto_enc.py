@@ -328,7 +328,7 @@ with tf.Session() as session:
             print(net)
             saver.restore(session,net)
             #Get som data!
-            test_data, _, n_train, train_file_idx = get_data_from_files( test_data_files, test_file_idx, 1000 )
+            test_data, avg, n_train, train_file_idx = get_data_from_files( test_data_files, test_file_idx, 1000 )
             #For each sample: run through autoencoder, and visualize the result!
             for i in range(n_train):
                 feed_dict={
