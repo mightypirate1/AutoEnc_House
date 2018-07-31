@@ -18,6 +18,7 @@ output_bias         : [Bool]                  (False)           If enabled, befo
 
 HYPERPARAMS:
 lr                  : [float]                 (0.00001)         learning rate
+init_alpha          : [float]                 (1.0)             The initial value of the temperature parameter alpha, used in the softmax
 minibatch_size      : [int]                   (32)              minibatch size!
 down_factor         : [int(any_power_of_2)]   (1)               how much the image is downsampled during reconstruction (set this to 2 and 96x96 -> 48x48)
 grey                : [bool]                  (False)           do we make the image grey before we put it through the AE?
@@ -46,6 +47,7 @@ default_settings =  {
                       'down_factor' : 1,
                       'gray' : False,
                       'lr' : 0.00001,
+                      'init_alpha' : 1.0,
                       'loss_weights' : (1.0, 0.0, 0.0),
                       'bn' : False,
                       'minibatch_size' : 32,
@@ -80,6 +82,7 @@ spatial_ae_dense =  {
                         'encoder_transf_size' : None,
                         'decoder_transform' : 'none',
                         'decoder' : 'dense',
+                        'init_alpha' : 7.0,
                         'bn' : True,
                         'output_bias' : True,
                         'loss_weights' : (1.0, 0.01, 0.1),
