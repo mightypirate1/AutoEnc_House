@@ -215,8 +215,8 @@ with tf.Session() as session:
     init_ops = tf.global_variables_initializer()
 
     #Data!
-    train_data_files = [work_dir+project+"/data/"+x for x in os.listdir(work_dir+project+"/data")]
-    test_data_files = [work_dir+project+"/testdata/"+x for x in os.listdir(work_dir+project+"/testdata")]
+    #train_data_files = [work_dir+project+"/data/"+x for x in os.listdir(work_dir+project+"/data")]
+    #test_data_files = [work_dir+project+"/testdata/"+x for x in os.listdir(work_dir+project+"/testdata")]
     train_file_idx = 0
     test_file_idx = 0
 
@@ -313,7 +313,7 @@ with tf.Session() as session:
             else:
                 print("AutoEncoder training cancelled by user!")
             print("---------------------------------------")
-            if not settings['-q']:
+            if not arguments['-q']:
                 input("Do you want to export these wights to use for initialization? ([enter] to continue, [ctrl-C] to abort)")
             save_weights_to_file(work_dir+project+"init/weights")
             if settings['avg_subtraction']:
