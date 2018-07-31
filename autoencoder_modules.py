@@ -182,7 +182,7 @@ def make_autoencoder(input_tensor, size, settings):
     ''' Parse the settings! '''
     if settings['encoder_transform'] == 'softargmax':
         assert settings['encoder_transf_size'] is None, "ERROR: when using the softargmax, you can not specify its size!"
-        def spatial_soft_argmax_wrapper(x,y,reuse=reuse):
+        def spatial_soft_argmax_wrapper(x,y,reuse=None):
             return spatial_soft_argmax(x,y, reuse=reuse, alpha=settings['init_alpha'])
         encoder_transform_fcn = spatial_soft_argmax_wrapper
         print("Using encoder_transf: softargmax")
