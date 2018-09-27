@@ -1,10 +1,11 @@
 '''
 USAGE: set up a dict with your architecture settings, and pass it to make_autoencoder.
-NOTER: the ones you do not specify are left as default!
+NOTE: the ones you do not specify are left as default!
 
 available options are:  { key : [alternative1, alternative2...] (default) comment }
 
 ARCHITECTURE:
+data_size           : [(int, int, int)]                         Size of the input data (W,H,C)
 encoder_transform   : ['softargmax', 'dense', 'dense_spatial'] ('softargmax')    applied after encoding convs
 encoder_transf_size : [int]                   (None)            this is used to control the size of the encoded state. set to None it uses default values
 decoder_transform   : ['distmap', 'dense', 'none'] ('distmap')  first transformation of the decoder
@@ -34,6 +35,7 @@ description         : [string]                ("")              verbal descripti
 '''
 
 default_settings =  {
+                      'data_size' : (96,96,3),
                       'encoder_transform' : 'softargmax',
                       'encoder_conv_depth' : (64,32,16),
                       'encoder_conv_size' : ((7,7), (5,5), (5,5)),

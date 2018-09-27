@@ -1,11 +1,9 @@
 import pickle
 import numpy as np
 import sys
-import h5py
 import os
 import matplotlib.pyplot as plt
 import cv2
-import scipy
 import tensorflow as tf
 from matplotlib.patches import Circle
 import code
@@ -16,38 +14,12 @@ import collections
 from docopt import docopt
 from datetime import datetime
 from autoencoder_modules import make_autoencoder, preprocess_sequence, smooth_loss, grey_downsample, space_blocks
-work_dir = "knut/"
+work_dir = "projects/"
 
 
-####
-####    Large block of auxilliary functions
-####
-'''  <THESE FUNCTIONS ARE JUST FOR DEBUGGING....> '''
-def sb(size):
-    x = 2*np.arange(size[0]).reshape((size[0],1,1))/(size[0]-1)-1
-    y = 2*np.arange(size[1]).reshape((1,size[1],1))/(size[1]-1)-1
-    X = np.tile(x, (1,size[1],1))
-    Y = np.tile(y, (size[0],1,1))
-    return X,Y
-def sf(x, alpha=1.0):
-    if len(x.shape) == 4:
-        if x.shape[0] != 1:
-            print("!")
-            exit()
-        else:
-            x = x.reshape(x.shape[1:])
-    x = alpha * x
-    px,py = sb(x.shape)
-    x = x - x.max()
-    exp_x = np.exp(x)
-    w = np.sum(exp_x, axis=(0,1))
-    softmax = exp_x / w
-    x = np.sum(softmax*px,axis=(0,1))
-    y = np.sum(softmax*py,axis=(0,1))
-    return softmax, (x,y)
-''' </THESE FUNCTIONS ARE JUST FOR DEBUGGING....> '''
-
-
+############
+############    Large block of auxilliary functions
+############
 def load_file(file, make_gray=False, resize=None):
     with open(file.name,'rb') as f:
         raw_data = pickle.load(f)
@@ -165,7 +137,7 @@ project = settings['project_folder']
 save_every_t = 10
 weight_file = "weights_tf" #for outputing weights of the net in a file....
 avg_file = work_dir + project + "nets_tf/" + "avgfile_tf"
-size = (96,96,3)
+size = settings['data_size']
 create_folders()
 
 with tf.Session() as session:
@@ -301,10 +273,6 @@ with tf.Session() as session:
 
                 if t - t_best_test_loss > 30:
                     raise DoneSignal("Training done: 30 epochs with no improvement of test-loss.  {} epochs of training done.".format(t), data=loss_history)
-                # #If the average test-loss of the last n/2 time steps is NOT lower than the average over the last n timesteps, we think loss is not decreasing!
-                # if t > 500 and len(loss_history) == loss_history.maxlen and (sum(loss_history) < 2*sum(list(loss_history)[:loss_history.maxlen//2])):
-                #     input("THIS IS A HYPOTHETICAL STOP SIGNAL DUE TO NON-DECREASING TEST-LOSS. [Ctrl-C] to stop, [Enter] to ignore.")
-                #     # raise DoneSignal("Training done: test-loss not decreasing after {} epochs.".format(t), data=loss_history)
             raise DoneSignal("Training done: epoch-limit {} reached.".format(settings['n_epochs']))
         except (KeyboardInterrupt, DoneSignal) as e:
             print("---------------------------------------")
@@ -388,7 +356,6 @@ with tf.Session() as session:
                     img = np.concatenate(  (img,x) , axis=0 )
                     idx += int(n/4)
 
-                # code.interact(local=locals())
                 fig,(ax1,ax2,ax3) = plt.subplots(3,1, figsize=(1,3))
                 fig.figsize = (4.0,1.0)
                 ax1.set_aspect('equal')
