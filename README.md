@@ -77,7 +77,18 @@ my_autoencoder =  {
                   }
 ```
 
-You can of course add more options to change what type of autoencoder you build (take inspiration from the pre-defined ones to get started!).        
+You can of course add more options to change what type of autoencoder you build (take inspiration from the pre-defined ones to get started!).
+
+All entries in the dictionary take the form 'option' : value.
+If you for instance want to set the learning-rate to be 0.00005, you add it as follows:
+
+```
+my_autoencoder =  {
+                    ...
+                    'lr' : 0.00005,
+                    ...
+                  }
+```
 
 #### Step 3 - Train your autoencoder!
 
