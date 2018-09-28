@@ -139,10 +139,18 @@ Example:
 ...
 data = sample_data() #returns an numpy array of shape (100000,128,96,3), containing 100000 images of size (128,96,3).
 for i,idx in enumerate(range(0,100000,1000)):
-  folder = 'data' if i%5!=0 else 'testdata'
-  pickle.dump(data[idx:idx+1000,:,:,:], "foo"+folder+"chunk{:05}".format(idx), protocol=pickle.HIGHEST_PROTOCOL)
+  folder = 'data/' if i%5!=0 else 'testdata/'
+  with open("my_project/"+folder+"chunk{:05}".format(idx), 'wb') as file:
+    pickle.dump(data[idx:idx+1000,:,:,:], file, protocol=pickle.HIGHEST_PROTOCOL)
 ```
-
+A simple setting for this data could be:
+```
+my_project_settings = {
+                        'project_folder' : 'my_project',
+                        'size' : (128,96,3), #Default size is (96,96,3), so we need to change it...
+                        'description' : 'My custom project. Most settings are default, which makes this a type of spatial autoencoder.'
+                      }
+```
 
 
 
