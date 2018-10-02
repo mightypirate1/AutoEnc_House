@@ -6,10 +6,11 @@ Just pull the repository, install the dependencies and run (see "Usage").
 
 #### Dependencies:
 
+- [pip] (If you for some reason did not get pip with your python-installation)
 - [Python3]
 - [OpenCV]
 - [tensorflow]
-- [pip] (If you for some reason did not get pip with your python-installation)
+
 > If you have another preferred way of installing python packages, you do not need pip.
 
 Additional python-packages:
