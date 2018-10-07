@@ -1,6 +1,11 @@
 # AutoEnc_House
 This project is designed to pre-train weights to be used in the PepperSocial-project.
 
+#### Extracted feature points using spatial auto-encoder variant.
+Extracted positions visualized on top of their corresponding input images. The coloring of a feature is consistent across the three images. Most features are visualized as dots, except two features that have been chosen to be visualized as circles to more clearly show how they track their intended objects.
+
+<img src="features.png" width="450"/>
+
 ## Installation:
 Just pull the repository, install the dependencies and run (see "Usage").
 
