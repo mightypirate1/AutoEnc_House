@@ -286,7 +286,7 @@ with tf.Session() as session:
                     else:
                         loss_stats["presence_testloss"][t] = presence_testloss/n_train
 
-                    test_loss += (min(n_train,idx+minibatch_size) - idx ) * loss[0]
+                    test_loss += (min(n_train,idx+minibatch_size) - idx ) * loss
                     idx += minibatch_size
                     if idx/n_train - last_print > 0.05:
                         print("-",end='',flush=True)
@@ -309,7 +309,7 @@ with tf.Session() as session:
                     save_path = saver.save(session, path)
                     print("[x]")
                 #Save the loss-stats...
-                loss_log_file = project + "/losslog.pkl"
+                loss_log_file = work_dir + project + "/losslog.pkl"
                 with open(loss_log_file,"wb") as f:
                     pickle.dump(loss_stats,f)
                 if t - t_best_test_loss > 30:
