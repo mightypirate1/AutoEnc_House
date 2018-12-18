@@ -146,7 +146,7 @@ loss_stats = {
                 "presence_loss" : {},
                 "error_testloss" : {},
                 "smooth_testloss" : {},
-                "presence_testlos" : {},
+                "presence_testloss" : {},
              }
 
 with tf.Session() as session:
