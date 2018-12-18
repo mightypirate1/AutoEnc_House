@@ -237,18 +237,18 @@ with tf.Session() as session:
                     output, loss_weights, _,loss, error_loss, smooth_loss, presence_loss = session.run([output_tf, loss_weights_tf, training_ops, loss_tf, error_loss_tf, smooth_loss_tf, presence_loss_tf], feed_dict=feed_dict)
 
                     if t in loss_stats["error_loss"]:
-                        loss_stats[["error_loss"][t] += error_loss/n
+                        loss_stats["error_loss"][t] += error_loss/n
                     else:
-                        loss_stats[["error_loss"][t] = error_loss/n
+                        loss_stats["error_loss"][t] = error_loss/n
 
                     if t in loss_stats["smooth_loss"]:
-                        loss_stats[["smooth_loss"][t] += smooth_loss/n
+                        loss_stats["smooth_loss"][t] += smooth_loss/n
                     else:
-                        loss_stats[["smooth_loss"][t] = smooth_loss/n
+                        loss_stats["smooth_loss"][t] = smooth_loss/n
                     if t in loss_stats["presence_loss"]:
-                        loss_stats[["presence_loss"][t] += presence_loss/n
+                        loss_stats["presence_loss"][t] += presence_loss/n
                     else:
-                        loss_stats[["presence_loss"][t] = presence_loss/n
+                        loss_stats["presence_loss"][t] = presence_loss/n
 
                     tot_loss += (min(n,idx+minibatch_size) - idx ) * loss
                     idx += minibatch_size
@@ -273,18 +273,18 @@ with tf.Session() as session:
                                }
                     loss, error_testloss, smooth_testloss, presence_testloss = session.run([loss_tf, error_loss_tf, smooth_loss_tf, presence_loss_tf], feed_dict=feed_dict)
                     if t in loss_stats["error_testloss"]:
-                        loss_stats[["error_testloss"][t] += error_testloss/n_train
+                        loss_stats["error_testloss"][t] += error_testloss/n_train
                     else:
-                        loss_stats[["error_testloss"][t] = error_testloss/n_train
+                        loss_stats["error_testloss"][t] = error_testloss/n_train
 
                     if t in loss_stats["smooth_testloss"]:
-                        loss_stats[["smooth_testloss"][t] += smooth_testloss/n_train
+                        loss_stats["smooth_testloss"][t] += smooth_testloss/n_train
                     else:
-                        loss_stats[["smooth_testloss"][t] = smooth_testloss/n_train
+                        loss_stats["smooth_testloss"][t] = smooth_testloss/n_train
                     if t in loss_stats["presence_testloss"]:
-                        loss_stats[["presence_testloss"][t] += presence_testloss/n_train
+                        loss_stats["presence_testloss"][t] += presence_testloss/n_train
                     else:
-                        loss_stats[["presence_testloss"][t] = presence_testloss/n_train
+                        loss_stats["presence_testloss"][t] = presence_testloss/n_train
 
                     test_loss += (min(n_train,idx+minibatch_size) - idx ) * loss[0]
                     idx += minibatch_size
