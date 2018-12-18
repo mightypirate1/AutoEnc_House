@@ -140,6 +140,15 @@ avg_file = work_dir + project + "nets_tf/" + "avgfile_tf"
 size = settings['data_size']
 create_folders()
 
+loss_stats = {
+                "error_loss" : {},
+                "smooth_loss" : {},
+                "presence_loss" : {},
+                "error_testloss" : {},
+                "smooth_testloss" : {},
+                "presence_testlos" : {},
+             }
+
 with tf.Session() as session:
     ''' Inputs '''
     input_tf = tf.placeholder(shape=(None,3)+size, dtype=tf.float32)
@@ -225,7 +234,22 @@ with tf.Session() as session:
                                 avg_tf : avg,
                                 train_mode_tf : True,
                                }
-                    output, loss_weights, _,loss, presence_loss = session.run([output_tf, loss_weights_tf, training_ops, loss_tf, presence_loss_tf], feed_dict=feed_dict)
+                    output, loss_weights, _,loss, error_loss, smooth_loss, presence_loss = session.run([output_tf, loss_weights_tf, training_ops, loss_tf, error_loss_tf, smooth_loss_tf, presence_loss_tf], feed_dict=feed_dict)
+
+                    if t in loss_stats["error_loss"]:
+                        loss_stats[["error_loss"][t] += error_loss/n
+                    else:
+                        loss_stats[["error_loss"][t] = error_loss/n
+
+                    if t in loss_stats["smooth_loss"]:
+                        loss_stats[["smooth_loss"][t] += smooth_loss/n
+                    else:
+                        loss_stats[["smooth_loss"][t] = smooth_loss/n
+                    if t in loss_stats["presence_loss"]:
+                        loss_stats[["presence_loss"][t] += presence_loss/n
+                    else:
+                        loss_stats[["presence_loss"][t] = presence_loss/n
+
                     tot_loss += (min(n,idx+minibatch_size) - idx ) * loss
                     idx += minibatch_size
                     if idx/n - last_print > 0.05:
@@ -247,7 +271,21 @@ with tf.Session() as session:
                                 avg_tf : avg,
                                 train_mode_tf : True,
                                }
-                    loss = session.run([loss_tf], feed_dict=feed_dict)
+                    loss, error_testloss, smooth_testloss, presence_testloss = session.run([loss_tf, error_loss_tf, smooth_loss_tf, presence_loss_tf], feed_dict=feed_dict)
+                    if t in loss_stats["error_testloss"]:
+                        loss_stats[["error_testloss"][t] += error_testloss/n_train
+                    else:
+                        loss_stats[["error_testloss"][t] = error_testloss/n_train
+
+                    if t in loss_stats["smooth_testloss"]:
+                        loss_stats[["smooth_testloss"][t] += smooth_testloss/n_train
+                    else:
+                        loss_stats[["smooth_testloss"][t] = smooth_testloss/n_train
+                    if t in loss_stats["presence_testloss"]:
+                        loss_stats[["presence_testloss"][t] += presence_testloss/n_train
+                    else:
+                        loss_stats[["presence_testloss"][t] = presence_testloss/n_train
+
                     test_loss += (min(n_train,idx+minibatch_size) - idx ) * loss[0]
                     idx += minibatch_size
                     if idx/n_train - last_print > 0.05:
@@ -270,7 +308,10 @@ with tf.Session() as session:
                     print("{}: Saving net ({})...".format(datetime.now(),path),end='',flush=True)
                     save_path = saver.save(session, path)
                     print("[x]")
-
+                #Save the loss-stats...
+                loss_log_file = project + "/losslog.pkl"
+                with open(loss_log_file,"wb") as f:
+                    pickle.dump(loss_stats,f)
                 if t - t_best_test_loss > 30:
                     raise DoneSignal("Training done: 30 epochs with no improvement of test-loss.  {} epochs of training done.".format(t), data=loss_history)
             raise DoneSignal("Training done: epoch-limit {} reached.".format(settings['n_epochs']))
