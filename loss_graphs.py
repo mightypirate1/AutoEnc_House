@@ -17,7 +17,7 @@ def load_losslog(x):
         with open(x,'rb') as f:
             return pickle.load(f)
     except:
-        return [{}]
+        return {}
 datasets = {}
 
 for e in experiments:
@@ -36,7 +36,7 @@ max_t = 0
 data = {}
 for d in datasets:
     data[d] = {}
-    for loss in datasets[d][0]:
+    for loss in datasets[d]:
         if weight_loss:
             if "weight" in loss:
                 w = loss['weight']
@@ -46,8 +46,8 @@ for d in datasets:
             w = 1
         data[d][loss] = {"t" : [], "val" : [], "weight" : w}
         t = 0
-        while t in datasets[d][0][loss]:
-            val = datasets[d][0][loss][t] * data[d][loss]["weight"]
+        while t in datasets[d][loss]:
+            val = datasets[d][loss][t] * data[d][loss]["weight"]
             data[d][loss]["t"].append(t)
             data[d][loss]["val"].append(val)
             max_t = max(max_t,t)
