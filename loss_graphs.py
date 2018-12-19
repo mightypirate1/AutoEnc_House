@@ -2,7 +2,6 @@ import csv
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
-from performance_calculator import performance_calc
 import settings
 
 latex=True
