@@ -124,7 +124,7 @@ regular_conv_ae_big_bottleneck  =   {
 
 ''' This is a standard conv-ae design. '''
 regular_conv_ae_small_bottleneck  =     {
-                                            'name' : "ConvAE (small)"
+                                            'name' : "ConvAE (small)",
                                             'encoder_transform' : 'dense',
                                             'encoder_transf_size' : 64,
                                             'decoder_transform' : 'dense',
