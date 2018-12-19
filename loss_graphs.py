@@ -16,9 +16,8 @@ def load_losslog(x):
     except:
         return [{}]
 datasets = {}
-# for x in [x for x in settings.quick_list if x["name"] in experiments]:
-#     datasets[x["name"]] = load_losslog("projects/"+x["project_folder"]+"/losslog.pkl")
-datasets['test'] = load_losslog("losslog.pkl"),
+for x in [x for x in settings.quick_list if x["name"] in experiments]:
+    datasets[x["name"]] = load_losslog("projects/"+x["project_folder"]+"/losslog.pkl")
 
 def smoothen(x, alpha=0.0):
     out = np.array(x)
