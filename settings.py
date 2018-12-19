@@ -144,21 +144,22 @@ quick_list = [x for x in dir() if "_ae_" in x]
 ###############
 
 __dir__ = dir()
-def parse_conf(setting):
+def parse_conf(setting, quiet=False):
     for x in default_settings:
         if x not in setting:
             setting[x] = default_settings[x]
-    print("---------------------------------------")
-    print("AutoEncoder settings:")
-    print("---------------------------------------")
-    for x in sorted(setting.items(), key=lambda x:x[0]):
-        if x[0] is not 'description':
-            print("{}".format(x[0]).rjust(25,' '), end=' : ')
-            print(x[1])
-    print("---------------------------------------")
-    print("Description:")
-    print(setting['description'])
-    print("---------------------------------------")
+    if not quiet:
+        print("---------------------------------------")
+        print("AutoEncoder settings:")
+        print("---------------------------------------")
+        for x in sorted(setting.items(), key=lambda x:x[0]):
+            if x[0] is not 'description':
+                print("{}".format(x[0]).rjust(25,' '), end=' : ')
+                print(x[1])
+        print("---------------------------------------")
+        print("Description:")
+        print(setting['description'])
+        print("---------------------------------------")
     return setting
 
 def get_conf(arg):
