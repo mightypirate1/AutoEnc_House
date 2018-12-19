@@ -68,6 +68,7 @@ default_settings =  {
 
 ''' Original architecture! '''
 spatial_ae_conv =   {
+                        'name' : "SAEV"
                         'encoder_transform' : 'softargmax',
                         'decoder_transform' : 'distmap',
                         'decoder' : 'conv',
@@ -80,6 +81,7 @@ spatial_ae_conv =   {
 
 ''' Dr. Finn's spatial AE (approx) '''
 spatial_ae_dense =  {
+                        'name' : "Finn"
                         'encoder_transform' : 'softargmax',
                         'encoder_transf_size' : None,
                         'decoder_transform' : 'none',
@@ -94,6 +96,7 @@ spatial_ae_dense =  {
 
 ''' Like the "original", but the softargmax is replaced with a trained mapping [feature-map -> (x,y, rho)] '''
 spatial_ae_conv_learned_encoder =   {
+                                        'name' : "experimental"
                                         'encoder_transform' : 'dense_spatial',
                                         'decoder_transform' : 'distmap',
                                         'decoder' : 'conv',
@@ -108,6 +111,7 @@ spatial_ae_conv_learned_encoder =   {
 
 ''' This is a standard conv-ae design. '''
 regular_conv_ae_big_bottleneck  =   {
+                                        'name' : "ConvAE"
                                         'encoder_transform' : 'dense',
                                         'encoder_transf_size' : 512,
                                         'decoder_transform' : 'dense',
@@ -120,6 +124,7 @@ regular_conv_ae_big_bottleneck  =   {
 
 ''' This is a standard conv-ae design. '''
 regular_conv_ae_small_bottleneck  =     {
+                                            'name' : "ConvAE (small)"
                                             'encoder_transform' : 'dense',
                                             'encoder_transf_size' : 64,
                                             'decoder_transform' : 'dense',

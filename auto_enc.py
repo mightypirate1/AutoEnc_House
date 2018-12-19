@@ -140,15 +140,6 @@ avg_file = work_dir + project + "nets_tf/" + "avgfile_tf"
 size = settings['data_size']
 create_folders()
 
-loss_stats = {
-                "error_loss" : {},
-                "smooth_loss" : {},
-                "presence_loss" : {},
-                "error_testloss" : {},
-                "smooth_testloss" : {},
-                "presence_testloss" : {},
-             }
-
 with tf.Session() as session:
     ''' Inputs '''
     input_tf = tf.placeholder(shape=(None,3)+size, dtype=tf.float32)
@@ -184,6 +175,15 @@ with tf.Session() as session:
                                                       tf.fill(tf.shape(presence_tf) ,1)                                                 )
 
     c1,c2,c3 = settings['loss_weights']
+    loss_stats = {  "name" : settings["name"]
+                    "Error loss" : {"weight" : c1},
+                    "Smooth loss" : {"weight" : c2},
+                    "Presence loss" : {"weight" : c3},
+                    "Error loss (test)" : {"weight" : c1},
+                    "Smooth loss (test)" : {"weight" : c2},
+                    "Presence loss (test)" : {"weight" : c3},
+                 }
+
     loss_tf = c1*error_loss_tf + c2*smooth_loss_tf + c3*presence_loss_tf
 
     ''' Training/Saver/Init ops '''
@@ -236,19 +236,19 @@ with tf.Session() as session:
                                }
                     output, loss_weights, _,loss, error_loss, smooth_loss, presence_loss = session.run([output_tf, loss_weights_tf, training_ops, loss_tf, error_loss_tf, smooth_loss_tf, presence_loss_tf], feed_dict=feed_dict)
 
-                    if t in loss_stats["error_loss"]:
-                        loss_stats["error_loss"][t] += error_loss/n
+                    if t in loss_stats["Error loss"]:
+                        loss_stats["Error loss"][t] += error_loss/n
                     else:
-                        loss_stats["error_loss"][t] = error_loss/n
+                        loss_stats["Error loss"][t] = error_loss/n
 
-                    if t in loss_stats["smooth_loss"]:
-                        loss_stats["smooth_loss"][t] += smooth_loss/n
+                    if t in loss_stats["Smooth loss"]:
+                        loss_stats["Smooth loss"][t] += smooth_loss/n
                     else:
-                        loss_stats["smooth_loss"][t] = smooth_loss/n
-                    if t in loss_stats["presence_loss"]:
-                        loss_stats["presence_loss"][t] += presence_loss/n
+                        loss_stats["Smooth loss"][t] = smooth_loss/n
+                    if t in loss_stats["Presence loss"]:
+                        loss_stats["Presence loss"][t] += presence_loss/n
                     else:
-                        loss_stats["presence_loss"][t] = presence_loss/n
+                        loss_stats["Presence loss"][t] = presence_loss/n
 
                     tot_loss += (min(n,idx+minibatch_size) - idx ) * loss
                     idx += minibatch_size
@@ -272,19 +272,19 @@ with tf.Session() as session:
                                 train_mode_tf : True,
                                }
                     loss, error_testloss, smooth_testloss, presence_testloss = session.run([loss_tf, error_loss_tf, smooth_loss_tf, presence_loss_tf], feed_dict=feed_dict)
-                    if t in loss_stats["error_testloss"]:
-                        loss_stats["error_testloss"][t] += error_testloss/n_train
+                    if t in loss_stats["Error loss (test)"]:
+                        loss_stats["Error loss (test)"][t] += error_testloss/n_train
                     else:
-                        loss_stats["error_testloss"][t] = error_testloss/n_train
+                        loss_stats["Error loss (test)"][t] = error_testloss/n_train
 
-                    if t in loss_stats["smooth_testloss"]:
-                        loss_stats["smooth_testloss"][t] += smooth_testloss/n_train
+                    if t in loss_stats["Smooth loss (test)"]:
+                        loss_stats["Smooth loss (test)"][t] += smooth_testloss/n_train
                     else:
-                        loss_stats["smooth_testloss"][t] = smooth_testloss/n_train
-                    if t in loss_stats["presence_testloss"]:
-                        loss_stats["presence_testloss"][t] += presence_testloss/n_train
+                        loss_stats["Smooth loss (test)"][t] = smooth_testloss/n_train
+                    if t in loss_stats["Presence loss (test)"]:
+                        loss_stats["Presence loss (test)"][t] += presence_testloss/n_train
                     else:
-                        loss_stats["presence_testloss"][t] = presence_testloss/n_train
+                        loss_stats["Presence loss (test)"][t] = presence_testloss/n_train
 
                     test_loss += (min(n_train,idx+minibatch_size) - idx ) * loss
                     idx += minibatch_size
