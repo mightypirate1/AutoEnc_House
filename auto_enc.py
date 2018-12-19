@@ -176,7 +176,6 @@ with tf.Session() as session:
 
     c1,c2,c3 = settings['loss_weights']
     loss_stats = {
-                    "name" : settings["name"],
                     "Error loss" : {"weight" : c1},
                     "Smooth loss" : {"weight" : c2},
                     "Presence loss" : {"weight" : c3},
