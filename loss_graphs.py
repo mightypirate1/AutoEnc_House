@@ -6,8 +6,12 @@ import settings
 
 latex=True
 weight_loss=True
-experiments = ["ConvAE", "SAEV"]
+experiments_to_plot = ["spatial_ae_conv", "regular_conv_ae_big_bottleneck"]
+experiments = {}
 
+for e in experiments_to_plot:
+    s = settings.parse_conf( settings.get_conf(e) )
+    experiments[s["name"]] = s
 def load_losslog(x):
     try:
         with open(x,'rb') as f:
@@ -15,8 +19,9 @@ def load_losslog(x):
     except:
         return [{}]
 datasets = {}
-for x in [x for x in settings.quick_list if x["name"] in experiments]:
-    datasets[x["name"]] = load_losslog("projects/"+x["project_folder"]+"/losslog.pkl")
+
+for e in experiments:
+    datasets[e] = load_losslog("projects/"+experiments[e]["project_folder"]+"/losslog.pkl")
 
 def smoothen(x, alpha=0.0):
     out = np.array(x)
