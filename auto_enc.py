@@ -403,23 +403,23 @@ with tf.Session() as session:
                 ax1.imshow(img)
                 ax2.imshow(np.concatenate((org,clone), axis=1))
                 activation_img_tuple = []
-                for n, snoop in enumerate(snoops):
-                    s = snoop[0,4:-4,4:-4,:] if n != 3 else sf(snoop[0,4:-4,4:-4,:])[0]
-                    M = np.zeros((98,98,3))
-                    _x, _y, z = s.shape
-                    x = (98-_x) / 2
-                    y = (98-_y) / 2
-                    random_layer_choice = np.random.permutation(np.arange(z))[:3] if z > 3 else np.arange(z)
-                    if z == 16:
-                        random_layer_choice = np.array([5,11,1])
-                    s = s[:,:, random_layer_choice]
-                    s -= np.amin(s)
-                    s /= np.amax(s)
-                    M[math.ceil(x):-math.floor(x), math.ceil(y):-math.floor(y),:] = s
-                    scipy.misc.imsave('snoop_img/{}.png'.format(n), s)
-                    activation_img_tuple.append(M)
-                activation_img = np.concatenate(activation_img_tuple, axis=1)
-                ax3.imshow(activation_img)
+                # for n, snoop in enumerate(snoops):
+                #     s = snoop[0,4:-4,4:-4,:] if n != 3 else sf(snoop[0,4:-4,4:-4,:])[0]
+                #     M = np.zeros((98,98,3))
+                #     _x, _y, z = s.shape
+                #     x = (98-_x) / 2
+                #     y = (98-_y) / 2
+                #     random_layer_choice = np.random.permutation(np.arange(z))[:3] if z > 3 else np.arange(z)
+                #     if z == 16:
+                #         random_layer_choice = np.array([5,11,1])
+                #     s = s[:,:, random_layer_choice]
+                #     s -= np.amin(s)
+                #     s /= np.amax(s)
+                #     M[math.ceil(x):-math.floor(x), math.ceil(y):-math.floor(y),:] = s
+                #     scipy.misc.imsave('snoop_img/{}.png'.format(n), s)
+                #     activation_img_tuple.append(M)
+                # activation_img = np.concatenate(activation_img_tuple, axis=1)
+                # ax3.imshow(activation_img)
                 # ''' Visualize the features detected! '''
                 if settings['encoder_transform'] in ['softargmax', 'dense_spatial']:
                     for i, (x,y,r) in enumerate(zip(positions[0,:],positions[1,:],positions[2,:]) ):
